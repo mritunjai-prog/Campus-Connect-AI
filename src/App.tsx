@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import LandingPage from "./components/LandingPage";
-import StudentPortal from "./components/StudentPortal";
-import TpoPortal from "./components/TpoPortal";
-import CompanyPortal from "./components/CompanyPortal";
+const StudentPortal = lazy(() => import("./components/StudentPortal"));
+const TpoPortal = lazy(() => import("./components/TpoPortal"));
+const CompanyPortal = lazy(() => import("./components/CompanyPortal"));
 import VerificationPendingPage from "./components/VerificationPending";
 import AccountRejectedPage from "./components/AccountRejected";
 import TpoEmailVerification from "./components/TpoEmailVerification";
 import { Theme } from "./types";
 import { auth } from "./lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { AnimatePresence, motion } from "motion/react";
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 
 export default function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem("campus_connect_jwt"));
@@ -20,6 +22,9 @@ export default function App() {
   const [tpoNeedsVerification, setTpoNeedsVerification] = useState<boolean>(false);
   const [tempTpoIdToken, setTempTpoIdToken] = useState<string>("");
   const [tempTpoEmail, setTempTpoEmail] = useState<string>("");
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const userRef = React.useRef(user);
   const profileRef = React.useRef(profile);
@@ -172,6 +177,11 @@ export default function App() {
     setToken(loginToken);
     setUser(loggedUser);
     setProfile(userProfile);
+    // Immediately navigate to the correct role portal
+    const role = loggedUser?.role;
+    if (role === 'student') navigate('/student', { replace: true });
+    else if (role === 'tpo') navigate('/tpo', { replace: true });
+    else if (role === 'recruiter' || role === 'company') navigate('/company', { replace: true });
   };
 
   const handleLogout = async () => {
@@ -210,82 +220,134 @@ export default function App() {
     );
   }
 
-  // ROLES DECODER OVERLAYS
-  if (token && user && profile) {
-    if (user.role === "student") {
-      return (
-        <StudentPortal 
-          token={token} 
-          user={user} 
-          initialProfile={profile} 
-          apiBaseUrl={apiBaseUrl} 
-          onLogout={handleLogout} 
-          theme={theme}
-          toggleTheme={toggleTheme}
-        />
-      );
-    } else if (user.role === "tpo") {
-      return (
-        <TpoPortal 
-          token={token} 
-          user={user} 
-          apiBaseUrl={apiBaseUrl} 
-          onLogout={handleLogout} 
-          theme={theme}
-          toggleTheme={toggleTheme}
-        />
-      );
-    } else if (user.role === "company" || user.role === "recruiter") {
-      // Conditionally redirect recruiters based on clearance status (users/{uid} is the single source of truth)
-      const isPending = user.status === "pending_verification" || user.status === "request_more_info" || profile?.approvalStatus === "pending";
-      const isRejected = user.status === "rejected" || profile?.approvalStatus === "rejected";
+  const SuspenseFallback = (
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#030408] flex flex-col items-center justify-center text-slate-800 dark:text-slate-200">
+      <div className="flex flex-col items-center space-y-4">
+        <div className="relative">
+          <div className="w-14 h-14 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin"></div>
+        </div>
+        <div className="text-center space-y-1">
+          <span className="block text-xs font-bold uppercase tracking-widest text-slate-400 font-mono">Loading Portal</span>
+        </div>
+      </div>
+    </div>
+  );
 
-      if (isPending) {
-        return (
-          <VerificationPendingPage 
-            onLogout={handleLogout} 
-            theme={theme} 
-            toggleTheme={toggleTheme} 
-            user={user}
-          />
-        );
-      } else if (isRejected) {
-        return (
-          <AccountRejectedPage 
-            onLogout={handleLogout} 
-            theme={theme} 
-            toggleTheme={toggleTheme} 
-          />
-        );
-      }
-      return (
-        <CompanyPortal 
-          token={token} 
-          user={user} 
-          initialProfile={profile} 
-          apiBaseUrl={apiBaseUrl} 
-          onLogout={handleLogout} 
-          theme={theme}
-          toggleTheme={toggleTheme}
-        />
-      );
+  const renderLandingOrRedirect = () => {
+    if (token && user) {
+      const targetRole = user.role === 'recruiter' ? 'company' : user.role;
+      return <Navigate to={`/${targetRole}`} replace />;
     }
-  }
+    return (
+      <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} className="w-full h-full">
+        <LandingPage 
+          onLoginSuccess={(tok, usr, prof) => {
+            setTpoNeedsVerification(false);
+            handleLoginSuccess(tok, usr, prof);
+          }} 
+          apiBaseUrl={apiBaseUrl} 
+          theme={theme}
+          toggleTheme={toggleTheme}
+          initialAuthMode={tpoNeedsVerification ? "accessCode" : undefined}
+          initialTempIdToken={tpoNeedsVerification ? tempTpoIdToken : undefined}
+          initialTempEmail={tpoNeedsVerification ? tempTpoEmail : undefined}
+          onCancelVerification={handleLogout}
+        />
+      </motion.div>
+    );
+  };
 
-  // DEFAULT PUBLIC LANDING
+  const getRouteKey = (path: string) => {
+    const segment = path.split('/')[1] || '';
+    if (['', 'features', 'dashboards', 'how-it-works', 'about', 'contact'].includes(segment)) {
+      return 'landing';
+    }
+    return segment;
+  };
+
   return (
-    <LandingPage 
-      onLoginSuccess={(tok, usr, prof) => {
-        setTpoNeedsVerification(false);
-        handleLoginSuccess(tok, usr, prof);
-      }} 
-      apiBaseUrl={apiBaseUrl} 
-      theme={theme}
-      toggleTheme={toggleTheme}
-      initialAuthMode={tpoNeedsVerification ? "accessCode" : undefined}
-      initialTempIdToken={tpoNeedsVerification ? tempTpoIdToken : undefined}
-      initialTempEmail={tpoNeedsVerification ? tempTpoEmail : undefined}
-      onCancelVerification={handleLogout}
-    />
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={getRouteKey(location.pathname)}>
+        <Route path="/" element={renderLandingOrRedirect()} />
+        <Route path="/features" element={renderLandingOrRedirect()} />
+        <Route path="/dashboards" element={renderLandingOrRedirect()} />
+        <Route path="/how-it-works" element={renderLandingOrRedirect()} />
+        <Route path="/about" element={renderLandingOrRedirect()} />
+        <Route path="/contact" element={renderLandingOrRedirect()} />
+
+        <Route path="/student/*" element={
+          token && user?.role === "student" ? (
+            <motion.div key="student" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }} className="w-full h-full">
+              <Suspense fallback={SuspenseFallback}>
+                <StudentPortal 
+                  token={token} 
+                  user={user} 
+                  initialProfile={profile} 
+                  apiBaseUrl={apiBaseUrl} 
+                  onLogout={handleLogout} 
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                />
+              </Suspense>
+            </motion.div>
+          ) : <Navigate to="/" />
+        } />
+
+        <Route path="/tpo/*" element={
+          token && user?.role === "tpo" ? (
+            <motion.div key="tpo" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }} className="w-full h-full">
+              <Suspense fallback={SuspenseFallback}>
+                <TpoPortal 
+                  token={token} 
+                  user={user} 
+                  apiBaseUrl={apiBaseUrl} 
+                  onLogout={handleLogout} 
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                />
+              </Suspense>
+            </motion.div>
+          ) : <Navigate to="/" />
+        } />
+
+        <Route path="/company/*" element={
+          token && (user?.role === "company" || user?.role === "recruiter") ? (() => {
+            const isPending = user.status === "pending_verification" || user.status === "request_more_info" || profile?.approvalStatus === "pending";
+            const isRejected = user.status === "rejected" || profile?.approvalStatus === "rejected";
+
+            if (isPending) {
+              return (
+                <motion.div key="pending" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }} className="w-full h-full">
+                  <VerificationPendingPage onLogout={handleLogout} theme={theme} toggleTheme={toggleTheme} user={user} />
+                </motion.div>
+              );
+            } else if (isRejected) {
+              return (
+                <motion.div key="rejected" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }} className="w-full h-full">
+                  <AccountRejectedPage onLogout={handleLogout} theme={theme} toggleTheme={toggleTheme} />
+                </motion.div>
+              );
+            }
+            return (
+              <motion.div key="company" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }} className="w-full h-full">
+                <Suspense fallback={SuspenseFallback}>
+                  <CompanyPortal 
+                    token={token} 
+                    user={user} 
+                    initialProfile={profile} 
+                    apiBaseUrl={apiBaseUrl} 
+                    onLogout={handleLogout} 
+                    theme={theme}
+                    toggleTheme={toggleTheme}
+                  />
+                </Suspense>
+              </motion.div>
+            );
+          })() : <Navigate to="/" />
+        } />
+
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </AnimatePresence>
   );
 }

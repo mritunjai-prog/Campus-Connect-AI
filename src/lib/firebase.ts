@@ -53,6 +53,7 @@ export const auth = getAuth(app);
 setPersistence(auth, browserLocalPersistence);
 
 export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
 
 // Connection testing function mandated by Firebase Skill Guidelines
 // Modified to run silently / warn cleanly without raising system-level error console logs

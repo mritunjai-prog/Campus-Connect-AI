@@ -59,6 +59,11 @@ import {
 import { auth, googleProvider, db } from "../lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { motion, AnimatePresence } from "motion/react";
+import { Link, useLocation } from "react-router-dom";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Float, Sphere, MeshDistortMaterial, OrbitControls, Stars } from "@react-three/drei";
+import * as THREE from "three";
+import { LineChart, Line, ResponsiveContainer, YAxis, Tooltip } from "recharts";
 import PresentationDeck from "./PresentationDeck";
 import { Theme } from "../types";
 import { AnimatedCounter } from "./AnimatedCounter";
@@ -98,6 +103,37 @@ function Stat({ value, suffix, label }: { value: number; suffix?: string; label:
     </div>
   );
 }
+
+const HeroGlobe = ({ isDark }: { isDark: boolean }) => {
+  const meshRef = useRef<THREE.Mesh>(null);
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x = state.clock.getElapsedTime() * 0.2;
+      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.3;
+    }
+  });
+
+  return (
+    <Float speed={2} rotationIntensity={1.5} floatIntensity={2}>
+      <Sphere args={[1.5, 64, 64]} ref={meshRef}>
+        <MeshDistortMaterial
+          color={isDark ? "#a855f7" : "#3b82f6"}
+          attach="material"
+          distort={0.4}
+          speed={2}
+          roughness={0.2}
+          metalness={0.8}
+          clearcoat={1}
+          clearcoatRoughness={0.1}
+        />
+      </Sphere>
+      <ambientLight intensity={isDark ? 0.5 : 1} />
+      <directionalLight position={[2, 5, 2]} intensity={2} color={isDark ? "#ec4899" : "#0ea5e9"} />
+      <directionalLight position={[-2, -5, -2]} intensity={1.5} color={isDark ? "#3b82f6" : "#a855f7"} />
+      {isDark && <Stars radius={50} depth={50} count={2000} factor={4} saturation={0} fade speed={1} />}
+    </Float>
+  );
+};
 
 interface LandingPageProps {
   onLoginSuccess: (token: string, user: any, profile: any) => void;
@@ -230,6 +266,37 @@ export default function LandingPage({
   ];
 
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    // Handle React Router deep links scrolling
+    const path = location.pathname;
+    if (path === "/contact") {
+      setTimeout(() => document.getElementById("cc-main-footer")?.scrollIntoView({ behavior: "smooth" }), 200);
+    } else if (path === "/features") {
+      setTimeout(() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" }), 200);
+    } else if (path === "/dashboards") {
+      setTimeout(() => document.getElementById("dashboards")?.scrollIntoView({ behavior: "smooth" }), 200);
+    } else if (path === "/how-it-works") {
+      setTimeout(() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" }), 200);
+    } else if (path === "/about") {
+      setTimeout(() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" }), 200);
+    } else if (path === "/home" || path === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [location.pathname]);
+
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  
+  // Track mouse position for the blurry glowing cursor effect
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   // Automatic slide cycle for Testimonials Carousel
   useEffect(() => {
@@ -493,6 +560,29 @@ export default function LandingPage({
     }
   };
 
+  const handleMockLogin = () => {
+    console.log(`[Auth] Engaging Developer Mock Login bypass for role: ${roleTheme}`);
+    const mockUid = `mock-uid-${Math.floor(Math.random()*1000)}`;
+    const mockRole = roleTheme === "company" ? "recruiter" : roleTheme;
+    
+    onLoginSuccess("mock-token-12345", { uid: mockUid, email: `developer_${roleTheme}@mock.edu`, role: mockRole }, {
+      role: mockRole,
+      name: `Developer Tester (${roleTheme})`,
+      email: `developer_${roleTheme}@mock.edu`,
+      phone: "555-0000",
+      branch: "Computer Science",
+      graduationYear: "2026",
+      course: "B.Tech",
+      enrollmentNumber: "DEV-9999",
+      profileCompleteness: 100,
+      verificationStatus: "verified",
+      applications: [],
+      interviews: [],
+      notifications: [],
+      resumeScore: 95
+    });
+  };
+
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -549,7 +639,7 @@ export default function LandingPage({
             localData = await fetchJson(`${apiBaseUrl}/api/auth/login`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email, password })
+              body: JSON.stringify({ email: email.trim(), password: password.trim(), role: roleTheme })
             });
           } catch (fetchErr: any) {
             throw new Error(fetchErr.message || "Invalid email/password.");
@@ -842,7 +932,20 @@ export default function LandingPage({
   const isDark = theme === "dark";
 
   return (
-    <div className={`min-h-screen ${isDark ? 'bg-[#030408] text-slate-100' : 'bg-[#f8fafc] text-slate-900'} flex flex-col font-sans overflow-x-hidden ${isDark ? 'selection:bg-indigo-900/40' : 'selection:bg-indigo-100'}`} id="campusconnect-main-landing">
+    <div className={`min-h-screen ${isDark ? 'bg-[#030408] text-slate-100' : 'bg-[#f8fafc] text-slate-900'} flex flex-col font-sans overflow-x-hidden cursor-none ${isDark ? 'selection:bg-indigo-900/40' : 'selection:bg-indigo-100'}`} id="campusconnect-main-landing">
+      
+      {/* Custom Blurry Mouse Follower */}
+      <div 
+        className="pointer-events-none fixed z-[9999] w-72 h-72 rounded-full bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 blur-[60px] transition-transform duration-500 ease-out will-change-transform mix-blend-screen"
+        style={{ transform: `translate(${mousePosition.x - 144}px, ${mousePosition.y - 144}px)` }}
+      />
+      
+      {/* Custom Solid Mouse Dot */}
+      <div 
+        className="pointer-events-none fixed z-[10000] w-3 h-3 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] border border-indigo-200 transition-transform duration-75 ease-out will-change-transform"
+        style={{ transform: `translate(${mousePosition.x - 6}px, ${mousePosition.y - 6}px)` }}
+      />
+
       {/* High impact grid pattern background */}
       <div className={`absolute inset-0 ${isDark ? 'bg-[#030408] bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)]' : 'bg-[#f8fafc] bg-[linear-gradient(to_right,#0f172a04_1px,transparent_1px),linear-gradient(to_bottom,#0f172a04_1px,transparent_1px)]'} bg-[size:40px_40px] pointer-events-none`}></div>
 
@@ -866,11 +969,11 @@ export default function LandingPage({
           </div>
           
           <nav className={`hidden md:flex items-center space-x-8 text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-600'} uppercase tracking-wider`}>
-            <a href="#features" className={`hover:text-indigo-550 hover:text-indigo-500 ${isDark ? 'hover:text-white' : 'hover:text-slate-900'} transition-colors`} onClick={() => setActiveTab("landing")}>Features</a>
-            <a href="#dashboards" className={`hover:text-indigo-550 hover:text-indigo-500 ${isDark ? 'hover:text-white' : 'hover:text-slate-900'} transition-colors`} onClick={() => setActiveTab("landing")}>Dashboards</a>
-            <a href="#how-it-works" className={`hover:text-indigo-550 hover:text-indigo-500 ${isDark ? 'hover:text-white' : 'hover:text-slate-900'} transition-colors`} onClick={() => setActiveTab("landing")}>Workflow</a>
-            <a href="#about" className={`hover:text-indigo-550 hover:text-indigo-500 ${isDark ? 'hover:text-white' : 'hover:text-slate-900'} transition-colors`} onClick={() => setActiveTab("landing")}>About</a>
-            <a href="#contact" className={`hover:text-indigo-550 hover:text-indigo-500 ${isDark ? 'hover:text-white' : 'hover:text-slate-900'} transition-colors`} onClick={() => { setActiveTab("landing"); setTimeout(() => document.getElementById("cc-main-footer")?.scrollIntoView({ behavior: "smooth" }), 150); }}>Contact</a>
+            <Link to="/features" className={`hover:text-indigo-550 hover:text-indigo-500 ${isDark ? 'hover:text-white' : 'hover:text-slate-900'} transition-colors`} onClick={() => setActiveTab("landing")}>Features</Link>
+            <Link to="/dashboards" className={`hover:text-indigo-550 hover:text-indigo-500 ${isDark ? 'hover:text-white' : 'hover:text-slate-900'} transition-colors`} onClick={() => setActiveTab("landing")}>Dashboards</Link>
+            <Link to="/how-it-works" className={`hover:text-indigo-550 hover:text-indigo-500 ${isDark ? 'hover:text-white' : 'hover:text-slate-900'} transition-colors`} onClick={() => setActiveTab("landing")}>Workflow</Link>
+            <Link to="/about" className={`hover:text-indigo-550 hover:text-indigo-500 ${isDark ? 'hover:text-white' : 'hover:text-slate-900'} transition-colors`} onClick={() => setActiveTab("landing")}>About</Link>
+            <Link to="/contact" className={`hover:text-indigo-550 hover:text-indigo-500 ${isDark ? 'hover:text-white' : 'hover:text-slate-900'} transition-colors`} onClick={() => setActiveTab("landing")}>Contact</Link>
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -907,82 +1010,90 @@ export default function LandingPage({
         ) : activeTab === "landing" ? (
           <div className="animate-fade-in">
             
-            {/* 1. HERO SECTION */}
-            <section className="relative pt-44 pb-20 px-6 sm:px-12 overflow-hidden">
+            {/* 1. HERO SECTION WITH 3D CANVAS */}
+            <section className="relative pt-44 pb-20 px-6 sm:px-12 overflow-hidden min-h-[90vh] flex items-center justify-center">
               <div className={`absolute top-32 left-10 w-72 h-72 rounded-full opacity-[0.12] blur-3xl animate-glow-pulse ${isDark ? 'bg-purple-600' : 'bg-purple-400'}`} />
               <div className={`absolute bottom-10 right-10 w-96 h-96 rounded-full opacity-[0.08] blur-3xl animate-glow-pulse ${isDark ? 'bg-cyan-500' : 'bg-cyan-400'}`} style={{ animationDelay: "2s" }} />
 
-              <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-                <div className="animate-fade-up text-left space-y-6">
-                  <div className={`inline-flex items-center gap-2 rounded-full border ${isDark ? 'border-white/[0.08] bg-slate-900/60 text-slate-400' : 'border-slate-200 bg-white/80 text-slate-600'} backdrop-blur-md px-4 py-2 text-xs font-semibold shadow-sm`}>
-                    <span className="w-2 h-2 rounded-full animate-glow-pulse bg-emerald-400" />
-                    <span>Now live for 200+ institutions</span>
-                  </div>
-                  <h1 className={`text-5xl sm:text-6xl md:text-[5.5rem] font-black leading-[1.05] ${isDark ? 'text-white' : 'text-slate-900'} tracking-tight`}>
-                    The future of <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-black">campus</span> <span className="bg-gradient-to-r from-fuchsia-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-black">placements</span> is intelligent.
-                  </h1>
-                  <p className={`text-sm sm:text-base ${isDark ? 'text-slate-400' : 'text-slate-600'} max-w-xl leading-relaxed font-semibold`}>
-                    CampusConnect AI unifies students, recruiters, and placement officers through smart automation —
-                    from resume analysis to offer letters, all in one beautifully orchestrated platform.
-                  </p>
-                  <div className="flex flex-wrap gap-4 pt-4">
+              <div className="absolute inset-0 z-0 opacity-80 pointer-events-none md:pointer-events-auto">
+                <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+                  <HeroGlobe isDark={isDark} />
+                  <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.5} />
+                </Canvas>
+              </div>
+
+              <div className="relative z-10 max-w-7xl mx-auto w-full">
+                <div className="animate-fade-up text-center space-y-8 max-w-4xl mx-auto backdrop-blur-sm bg-white/5 dark:bg-black/5 p-8 rounded-[3rem] border border-white/10 shadow-2xl">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className={`inline-flex items-center gap-2 rounded-full border ${isDark ? 'border-white/[0.15] bg-slate-900/80 text-slate-300' : 'border-slate-200/80 bg-white/90 text-slate-700'} backdrop-blur-xl px-5 py-2 text-xs font-bold shadow-lg`}
+                  >
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <span>Mind-Blowing 3D Interactive UI Active</span>
+                  </motion.div>
+                  
+                  <motion.h1 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.2 }}
+                    className={`text-6xl sm:text-7xl md:text-[6rem] font-black leading-[1.05] ${isDark ? 'text-white' : 'text-slate-900'} tracking-tighter`}
+                  >
+                    The <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">magical</span> future of placements.
+                  </motion.h1>
+                  
+                  <motion.p 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.3 }}
+                    className={`text-base sm:text-lg md:text-xl ${isDark ? 'text-slate-300' : 'text-slate-600'} max-w-2xl mx-auto leading-relaxed font-medium`}
+                  >
+                    Experience an immersive, AI-driven universe connecting top talent with elite recruiters.
+                  </motion.p>
+                  
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.4 }}
+                    className="flex flex-wrap gap-4 pt-6 justify-center"
+                  >
                     <button 
                       onClick={() => { setAuthMode("register"); setActiveTab("auth"); setRole(roleTheme); setError(""); }}
-                      className="bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-500 hover:brightness-110 text-black font-extrabold px-8 py-3.5 rounded-full text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-[0_4px_24px_rgba(6,182,212,0.3)] duration-200"
+                      className="group bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-extrabold px-10 py-4 rounded-full text-sm sm:text-base uppercase tracking-widest flex items-center gap-3 transition-all shadow-[0_8px_32px_rgba(168,85,247,0.4)] hover:shadow-[0_12px_40px_rgba(168,85,247,0.6)] duration-300 transform hover:-translate-y-1"
                     >
-                      Launch Platform <Rocket className="w-4 h-4 text-black stroke-[2.5]" />
+                      Enter Portal <Rocket className="w-5 h-5 text-white group-hover:animate-bounce" />
                     </button>
-                    <a href="#demo" className={`rounded-full border ${isDark ? 'border-white/[0.08] bg-[#07090e]/40 hover:bg-slate-900/60 text-white' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-800 shadow-sm'} backdrop-blur-md font-extrabold px-8 py-3.5 text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all`}>
-                      Watch Demo <ChevronRight className="w-4 h-4 text-slate-400" />
+                    <a href="#demo" className={`group rounded-full border ${isDark ? 'border-white/[0.15] bg-[#07090e]/60 hover:bg-slate-900/80 text-white' : 'border-slate-300 bg-white/80 hover:bg-slate-50 text-slate-800 shadow-lg'} backdrop-blur-xl font-extrabold px-10 py-4 text-sm sm:text-base uppercase tracking-widest flex items-center gap-2 transition-all duration-300 hover:-translate-y-1`}>
+                      Watch Demo <ChevronRight className="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition-transform" />
                     </a>
-                  </div>
-                </div>
-
-                <div className="relative animate-fade-up" style={{ animationDelay: "0.2s" }}>
-                  <div className={`relative p-2 rounded-[2rem] bg-gradient-to-tr from-cyan-500/10 via-indigo-600/10 to-fuchsia-500/10 border ${isDark ? 'border-white/[0.08]' : 'border-slate-200'}`}>
-                    <div className="absolute inset-0 blur-3xl opacity-40 bg-gradient-to-tr from-cyan-500 via-indigo-600 to-fuchsia-500 rounded-full" />
-                    <img 
-                      referrerPolicy="no-referrer"
-                      src="/assets/hero-ai.jpg" 
-                      alt="AI neural network brain illustration" 
-                      width={1536} 
-                      height={1024}
-                      className={`relative rounded-3xl border ${isDark ? 'border-white/10' : 'border-slate-200'} shadow-2xl w-full`} 
-                    />
-                  </div>
-                  {/* Floating glass cards exactly like Image 1 */}
-                  <div className={`absolute -left-6 top-10 rounded-2xl ${isDark ? 'bg-[#090b14]/75 border-white/[0.08] text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)]' : 'bg-white border-slate-200/80 text-slate-850 shadow-lg'} backdrop-blur-xl p-4 w-56 animate-float hidden md:block text-left`}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-tr from-cyan-500 to-sky-400 shadow-lg shadow-cyan-500/10">
-                        <Brain className="w-5 h-5 text-slate-950" />
-                      </div>
-                      <div>
-                        <div className="text-[10px] text-slate-500 font-mono font-bold uppercase tracking-wider">Resume Score</div>
-                        <div className={`font-extrabold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>92 / 100</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={`absolute -right-4 bottom-16 rounded-2xl ${isDark ? 'bg-[#090b14]/75 border-white/[0.08] text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)]' : 'bg-white border-slate-200/80 text-slate-850 shadow-lg'} backdrop-blur-xl p-4 w-60 animate-float hidden md:block text-left`} style={{ animationDelay: "2s" }}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-tr from-violet-500 to-pink-500 shadow-lg shadow-purple-500/15">
-                        <Target className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="text-[10px] text-slate-500 font-mono font-bold uppercase tracking-wider">Match Found</div>
-                        <div className="font-extrabold text-[#22d3ee] text-xs">Google · SDE Intern</div>
-                      </div>
-                    </div>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             </section>
 
             {/* 2. STATS & LOGOS SECTION */}
             <section className="py-16 px-6 bg-transparent relative">
-              <div className="max-w-6xl mx-auto space-y-16">
+              <div className="max-w-6xl mx-auto space-y-16 relative">
                 
+                {/* Background Recharts Trend Graph */}
+                <div className="absolute top-0 left-0 right-0 h-40 opacity-20 pointer-events-none z-0 overflow-hidden">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={10} minHeight={10}>
+                    <LineChart data={[
+                      { name: '2020', placement: 40 },
+                      { name: '2021', placement: 55 },
+                      { name: '2022', placement: 70 },
+                      { name: '2023', placement: 85 },
+                      { name: '2024', placement: 91 },
+                      { name: '2025', placement: 94 },
+                    ]}>
+                      <Line type="monotone" dataKey="placement" stroke={isDark ? "#a855f7" : "#3b82f6"} strokeWidth={4} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+
                 {/* 3 Indicators directly from Image 2 */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-4xl mx-auto text-center">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-4xl mx-auto text-center relative z-10">
                   <div className="space-y-1">
                     <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-fuchsia-400 to-pink-500 bg-clip-text text-transparent font-sans tracking-tight">
                       <AnimatedCounter to={94} suffix="%" />
@@ -1966,7 +2077,56 @@ export default function LandingPage({
                         </p>
                       </div>
 
-                      {/* Google Sign In button */}
+                      {/* Role Selector Tabs */}
+                      <div className={`flex p-1 rounded-xl ${isDark ? 'bg-slate-900/80 border border-white/[0.06]' : 'bg-slate-100 border border-slate-200'} gap-1`}>
+                        <button
+                          type="button"
+                          onClick={() => { setRoleTheme("student"); setRole("student"); }}
+                          className={`flex-1 text-[11px] font-bold py-2.5 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${roleTheme === "student" ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/30' : `${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'}`}`}
+                        >
+                          <span>🎓</span><span>Student</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setRoleTheme("tpo"); setRole("tpo"); }}
+                          className={`flex-1 text-[11px] font-bold py-2.5 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${roleTheme === "tpo" ? 'bg-purple-500 text-white shadow-md shadow-purple-500/30' : `${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'}`}`}
+                        >
+                          <span>🏛️</span><span>TPO</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setRoleTheme("company"); setRole("company"); }}
+                          className={`flex-1 text-[11px] font-bold py-2.5 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${roleTheme === "company" ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30' : `${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'}`}`}
+                        >
+                          <span>💼</span><span>Recruiter</span>
+                        </button>
+                      </div>
+
+                      {/* TPO hint banner */}
+                      {roleTheme === "tpo" && (
+                        <div className="flex items-start gap-2.5 bg-purple-500/10 border border-purple-500/20 rounded-xl p-3 text-left">
+                          <span className="text-purple-400 text-base mt-0.5">🏛️</span>
+                          <div>
+                            <p className="text-[11px] font-bold text-purple-300">TPO / Admin Login</p>
+                            <p className="text-[10px] text-purple-400/80 font-semibold mt-0.5">
+                              Use <span className="font-mono text-purple-300">tpo01admin@gmail.com</span> with password <span className="font-mono text-purple-300">tpoadmin01@</span>
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Recruiter hint banner */}
+                      {roleTheme === "company" && (
+                        <div className="flex items-start gap-2.5 bg-sky-500/10 border border-sky-500/20 rounded-xl p-3 text-left">
+                          <span className="text-sky-400 text-base mt-0.5">💼</span>
+                          <div>
+                            <p className="text-[11px] font-bold text-sky-300">Recruiter / Company Login</p>
+                            <p className="text-[10px] text-sky-400/80 font-semibold mt-0.5">Sign in with Google or register a new company account.</p>
+                          </div>
+                        </div>
+                      )}
+
+
                       <button
                         type="button"
                         onClick={handleGoogleSignIn}
@@ -2493,11 +2653,20 @@ export default function LandingPage({
                     </form>
                   )}
 
-                  <div className="text-center pt-3 border-t border-white/[0.04]">
+                  <div className="text-center pt-3 border-t border-white/[0.04] space-y-3">
+                    {/* Developer Mock Login Bypass */}
+                    <button
+                      type="button"
+                      onClick={handleMockLogin}
+                      className="w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20 font-black h-10 rounded-xl text-[10px] uppercase tracking-widest font-mono transition shadow-lg shadow-emerald-500/5"
+                    >
+                      ⚡ Developer: Mock Login ({roleTheme})
+                    </button>
+
                     <button 
                       type="button" 
                       onClick={() => { setActiveTab("landing"); setError(""); setSuccess(""); }}
-                      className={`text-xs font-bold transition cursor-pointer ${isDark ? 'text-slate-500 hover:text-slate-350' : 'text-slate-600 hover:text-slate-800'}`}
+                      className={`block w-full text-xs font-bold transition cursor-pointer ${isDark ? 'text-slate-500 hover:text-slate-350' : 'text-slate-600 hover:text-slate-800'}`}
                     >
                       ← Return to information homepage
                     </button>

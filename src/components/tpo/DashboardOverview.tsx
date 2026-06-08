@@ -21,6 +21,8 @@ import {
   X,
   HelpCircle
 } from "lucide-react";
+import { motion } from "motion/react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts';
 import { PlacementDrive, StudentProfile, Application, AuditLog, DashboardStatsTPO } from "../../types";
 
 interface DashboardOverviewProps {
@@ -357,39 +359,57 @@ export default function DashboardOverview({
             )}
           </div>
 
-          {/* Section 3: Placement Funnel Dashboard representation */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4" id="dashboard-funnel-section">
+          {/* Section 3: Placement Funnel Dashboard representation with Recharts */}
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 flex flex-col" id="dashboard-funnel-section">
             <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="font-bold text-slate-900 dark:text-white text-sm">Candidates Conversion Funnel</h3>
               <p className="text-[10px] text-slate-450 dark:text-slate-500">Track student progress from initial application to final offer selection</p>
             </div>
 
+            <div className="h-48 w-full flex-1" style={{ minHeight: 192 }}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={10} minHeight={10}>
+                <BarChart data={[
+                  { name: 'Applied', count: funnelApplied, color: '#6366f1' },
+                  { name: 'Shortlisted', count: funnelShortlisted, color: '#06b6d4' },
+                  { name: 'Interview', count: funnelInterview, color: '#8b5cf6' },
+                  { name: 'Selected', count: funnelSelected, color: '#10b981' }
+                ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.2} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
+                  <RechartsTooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                  <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={50}>
+                    {
+                      [
+                        { name: 'Applied', count: funnelApplied, color: '#6366f1' },
+                        { name: 'Shortlisted', count: funnelShortlisted, color: '#06b6d4' },
+                        { name: 'Interview', count: funnelInterview, color: '#8b5cf6' },
+                        { name: 'Selected', count: funnelSelected, color: '#10b981' }
+                      ].map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))
+                    }
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
               <div className="text-center p-3 bg-indigo-50/20 dark:bg-indigo-950/20 rounded-xl border border-indigo-120/50">
                 <span className="text-[9px] font-bold uppercase text-slate-400 block">Applied</span>
                 <span className="text-2xl font-black text-indigo-600 block mt-1">{funnelApplied}</span>
-                <span className="text-[9px] text-slate-450">Initial submissions</span>
               </div>
               <div className="text-center p-3 bg-cyan-50/20 dark:bg-cyan-950/20 rounded-xl border border-cyan-120/50">
                 <span className="text-[9px] font-bold uppercase text-slate-400 block">Shortlisted</span>
                 <span className="text-2xl font-black text-cyan-500 block mt-1">{funnelShortlisted}</span>
-                <span className="text-[9px] text-slate-450">
-                  {funnelApplied > 0 ? Math.round((funnelShortlisted / funnelApplied) * 100) : 0}% of applied
-                </span>
               </div>
               <div className="text-center p-3 bg-violet-50/20 dark:bg-violet-950/20 rounded-xl border border-violet-120/50">
-                <span className="text-[9px] font-bold uppercase text-slate-400 block">Interview Scheduled</span>
+                <span className="text-[9px] font-bold uppercase text-slate-400 block">Interviews</span>
                 <span className="text-2xl font-black text-violet-500 block mt-1">{funnelInterview}</span>
-                <span className="text-[9px] text-slate-450">
-                  {funnelShortlisted > 0 ? Math.round((funnelInterview / funnelShortlisted) * 100) : 0}% conversion
-                </span>
               </div>
               <div className="text-center p-3 bg-emerald-50/20 dark:bg-emerald-950/20 rounded-xl border border-emerald-120/50">
-                <span className="text-[9px] font-bold uppercase text-slate-400 block">Selected (Offers)</span>
+                <span className="text-[9px] font-bold uppercase text-slate-400 block">Selected</span>
                 <span className="text-2xl font-black text-emerald-600 block mt-1">{funnelSelected}</span>
-                <span className="text-[9px] text-slate-450 font-bold text-emerald-500">
-                  {funnelApplied > 0 ? Math.round((funnelSelected / funnelApplied) * 100) : 0}% Selection rate
-                </span>
               </div>
             </div>
           </div>
@@ -400,12 +420,12 @@ export default function DashboardOverview({
         <div className="space-y-6">
           
           {/* Section 4: Admin Insights Panel */}
-          <div className="bg-slate-900 text-white p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4" id="dashboard-admin-insights-section">
-            <div className="border-b border-slate-850 pb-3 flex items-center space-x-2">
-              <Zap className="w-4 h-4 text-amber-400" />
+          <div className="bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl space-y-4" id="dashboard-admin-insights-section">
+            <div className="border-b border-slate-200 dark:border-slate-850 pb-3 flex items-center space-x-2">
+              <Zap className="w-4 h-4 text-amber-600 dark:text-amber-400" />
               <div>
-                <h3 className="font-extrabold text-sm text-white">Administrative Insights</h3>
-                <span className="text-[9px] text-slate-400 uppercase tracking-widest block">Executive Controller Metrics</span>
+                <h3 className="font-extrabold text-sm text-slate-900 dark:text-white">Administrative Insights</h3>
+                <span className="text-[9px] text-slate-500 dark:text-slate-400 uppercase tracking-widest block">Executive Controller Metrics</span>
               </div>
             </div>
 
@@ -434,7 +454,7 @@ export default function DashboardOverview({
                     {topHiringCompanies.map((comp, idx) => (
                       <div key={idx} className="flex justify-between text-[11px]">
                         <span className="text-slate-350">{comp.name}</span>
-                        <span className="font-bold text-white">{comp.count} selects</span>
+                        <span className="font-bold text-slate-900 dark:text-white">{comp.count} selects</span>
                       </div>
                     ))}
                   </div>

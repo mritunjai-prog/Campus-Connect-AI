@@ -6,7 +6,10 @@ import StudentRegistryTab from "./tpo/StudentRegistryTab";
 import RecruiterAndJobDesk from "./tpo/RecruiterAndJobDesk";
 import ApplicationsAndAnalyticsDesk from "./tpo/ApplicationsAndAnalyticsDesk";
 import UtilitiesAndSettingsDesk from "./tpo/UtilitiesAndSettingsDesk";
+import PredictiveAnalytics from "./tpo/PredictiveAnalytics";
+import StudentResumeGallery from "./tpo/StudentResumeGallery";
 import { AlertCircle, CheckSquare, RefreshCw, Menu, Sparkles } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface TpoPortalProps {
   token: string;
@@ -26,8 +29,12 @@ export default function TpoPortal({
   toggleTheme 
 }: TpoPortalProps) {
   
-  // Navigation active tab State (11 core panels)
-  const [activeTab, setActiveTab] = useState<TpoSubTab>("overview");
+  // URL-based navigation
+  const navigate = useNavigate();
+  const location = useLocation();
+  const pathSegment = (location.pathname.split('/')[2] || 'overview') as TpoSubTab;
+  const activeTab = pathSegment;
+  const setActiveTab = (tab: TpoSubTab) => navigate(`/tpo/${tab}`, { replace: true });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Core synchronized server-side states
@@ -441,6 +448,10 @@ export default function TpoPortal({
               onUpdateAppStatus={handleUpdateApplicantStatus}
               activeView="placement_analytics"
             />
+          )}
+
+          {activeTab === "predictive_analytics" && (
+            <PredictiveAnalytics token={token} apiBaseUrl={apiBaseUrl} />
           )}
 
           {(activeTab === "notifications_center" || activeTab === "drive_management" || activeTab === "reports_exports" || activeTab === "settings") && (

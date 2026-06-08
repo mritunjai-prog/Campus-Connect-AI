@@ -14,7 +14,8 @@ import {
   Send,
   Calendar
 } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { PlacementDrive, Application, Interview, StudentProfile } from "../../types";
 
 interface DashboardProps {
@@ -220,17 +221,39 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Matchmaker View */}
-        <div className="lg:col-span-2 premium-card-light p-8 md:p-10 relative overflow-hidden">
+        <div className="lg:col-span-2 premium-card-light p-8 md:p-10 relative overflow-hidden flex flex-col">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl">
                 <Sparkles className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
               </div>
               <div>
-                <h3 className="font-black text-slate-900 dark:text-white text-xl tracking-tight">Career Matchmaker</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Personalized placement drives for your skill matrix</p>
+                <h3 className="font-black text-slate-900 dark:text-white text-xl tracking-tight">Career Matchmaker & Insights</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Personalized placement drives and AI resume trends</p>
               </div>
             </div>
+          </div>
+
+          {/* Recharts Resume Trend */}
+          <div className="h-48 mb-8 w-full" style={{ minHeight: 200 }}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={10} minHeight={10}>
+              <AreaChart data={[
+                { month: 'Jan', score: 40 }, { month: 'Feb', score: 55 }, { month: 'Mar', score: 50 },
+                { month: 'Apr', score: 75 }, { month: 'May', score: profile.profileCompleteness || 80 }
+              ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.2} />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
+                <RechartsTooltip contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                <Area type="monotone" dataKey="score" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorScore)" />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
 
           {!isVerified ? (

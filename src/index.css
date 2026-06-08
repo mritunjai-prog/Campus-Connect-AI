@@ -125,6 +125,17 @@ body {
   border-radius: 1rem;
 }
 
+/* Custom Cursor overrides for Landing Page */
+#campusconnect-main-landing,
+#campusconnect-main-landing * {
+  cursor: none !important;
+}
+
+body {
+  background-color: #030408;
+  color: #f8fafc;
+}
+
 .text-gradient {
   background: var(--gradient-vibrant);
   -webkit-background-clip: text;

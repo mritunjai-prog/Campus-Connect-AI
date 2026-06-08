@@ -126,8 +126,8 @@ export default function CompanyAnalytics({ drives, applications }: CompanyAnalyt
             <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider font-mono">Conversion Funnel Volume</h4>
             <h3 className="font-bold text-sm text-slate-800">Recruitment Step Conversion yield</h3>
           </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-64" style={{ minHeight: 256 }}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={10} minHeight={10}>
               <BarChart data={funnelData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" tick={{ fontSize: 10 }} />
@@ -152,8 +152,8 @@ export default function CompanyAnalytics({ drives, applications }: CompanyAnalyt
           {branchData.length === 0 ? (
             <div className="h-64 flex items-center justify-center text-xs text-slate-400">No student branch details compiled.</div>
           ) : (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="h-64" style={{ minHeight: 256 }}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={10} minHeight={10}>
                 <BarChart data={branchData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" tick={{ fontSize: 10 }} />
@@ -178,8 +178,8 @@ export default function CompanyAnalytics({ drives, applications }: CompanyAnalyt
           {skillsData.length === 0 ? (
             <div className="h-64 flex items-center justify-center text-xs text-slate-400">Apply for positions to compile skills stats.</div>
           ) : (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="h-64" style={{ minHeight: 256 }}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={10} minHeight={10}>
                 <LineChart data={skillsData} margin={{ top: 10, right: 15, left: -25, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" tick={{ fontSize: 10 }} />
@@ -201,8 +201,8 @@ export default function CompanyAnalytics({ drives, applications }: CompanyAnalyt
           {rolesData.length === 0 ? (
             <div className="h-64 flex items-center justify-center text-xs text-slate-400">Post open positions to compile yield stats.</div>
           ) : (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="h-64" style={{ minHeight: 256 }}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={10} minHeight={10}>
                 <BarChart data={rolesData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="role" tick={{ fontSize: 10 }} />

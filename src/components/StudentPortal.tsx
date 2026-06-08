@@ -6,7 +6,9 @@ import { CareerDiscoveryHub as DiscoveryHubView } from "./student/CareerDiscover
 import { ResumeCenter as ResumeCenterView } from "./student/ResumeCenter";
 import { MockInterview as MockInterviewView } from "./student/MockInterview";
 import { Applications as ApplicationsView } from "./student/Applications";
+import { StudentChatbot } from "./student/StudentChatbot";
 import AccountSecuritySettings from "./shared/AccountSecuritySettings";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { 
   Bell, 
@@ -34,7 +36,12 @@ interface StudentPortalProps {
 type TabType = "dashboard" | "profile" | "opportunities" | "resume" | "applications" | "interview" | "notifications" | "settings";
 
 export default function StudentPortal({ token, user, initialProfile, apiBaseUrl, onLogout, theme, toggleTheme }: StudentPortalProps) {
-  const [activeTab, setActiveTab] = useState<TabType>("dashboard");
+  const navigate = useNavigate();
+  const location = useLocation();
+  // Derive activeTab from URL path: /student/dashboard -> "dashboard"
+  const pathSegment = location.pathname.split('/')[2] || 'dashboard';
+  const activeTab = pathSegment as TabType;
+  const setActiveTab = (tab: TabType) => navigate(`/student/${tab}`, { replace: true });
   const [profile, setProfile] = useState<StudentProfile>(initialProfile);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
@@ -544,7 +551,7 @@ export default function StudentPortal({ token, user, initialProfile, apiBaseUrl,
               <div className="flex flex-col space-y-3">
                 <button 
                   onClick={() => {
-                    setActiveTab("profile");
+                    navigate("/student/profile");
                     setShowLockModal(null);
                   }}
                   className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-indigo-200 dark:shadow-none"
@@ -562,6 +569,9 @@ export default function StudentPortal({ token, user, initialProfile, apiBaseUrl,
           </div>
         )}
       </AnimatePresence>
+
+      {/* Floating Global Assistant */}
+      <StudentChatbot token={token} apiBaseUrl={apiBaseUrl} />
     </div>
   );
 }

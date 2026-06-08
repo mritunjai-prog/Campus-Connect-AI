@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { CompanyProfile, PlacementDrive, Application, Interview, Notification, Theme } from "../types";
 import { motion, AnimatePresence } from "motion/react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // Sub-components Imports
 import CompanyDashboard from "./company/CompanyDashboard";
@@ -39,7 +40,11 @@ interface CompanyPortalProps {
 }
 
 export default function CompanyPortal({ token, user, initialProfile, apiBaseUrl, onLogout, theme, toggleTheme }: CompanyPortalProps) {
-  const [activeSubTab, setActiveSubTab] = useState<"dashboard" | "drives" | "applicants" | "interviews" | "analytics" | "settings">("dashboard");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const pathSegment = location.pathname.split('/')[2] || 'dashboard';
+  const activeSubTab = pathSegment as "dashboard" | "drives" | "applicants" | "interviews" | "analytics" | "settings";
+  const setActiveSubTab = (tab: string) => navigate(`/company/${tab}`, { replace: true });
   const [profile, setProfile] = useState<CompanyProfile>(initialProfile);
   const [drives, setDrives] = useState<PlacementDrive[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
@@ -66,7 +71,7 @@ export default function CompanyPortal({ token, user, initialProfile, apiBaseUrl,
 
   useEffect(() => {
     fetchCompanyData();
-  }, [activeSubTab]);
+  }, [location.pathname]);
 
   const fetchCompanyData = async () => {
     try {

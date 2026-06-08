@@ -173,7 +173,7 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate, loading, on
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Profile Progress</span>
             <span className="text-sm font-black text-indigo-600 dark:text-indigo-400">{profile.profileCompleteness}% Complete</span>
           </div>
-          {isCompleted && !isVerified && !isPending && (
+          {!isVerified && !isPending && (
             <button
               type="button"
               onClick={onSubmitVerification}
@@ -393,8 +393,8 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate, loading, on
               </div>
               <Input label="College / University" value={formData.collegeName} onChange={v => setFormData({...formData, collegeName: v})} />
               <Input label="Graduation Year" value={formData.graduationYear} onChange={v => setFormData({...formData, graduationYear: v})} />
-              <Input label="Current CGPA" type="number" step="0.01" value={formData.cgpa} onChange={v => setFormData({...formData, cgpa: Number(v)})} />
-              <Input label="Active Backlogs" type="number" value={formData.backlogs} onChange={v => setFormData({...formData, backlogs: Number(v)})} />
+              <Input label="Current CGPA" type="number" step="0.01" value={formData.cgpa} onChange={v => setFormData({...formData, cgpa: v})} />
+              <Input label="Active Backlogs" type="number" value={formData.backlogs} onChange={v => setFormData({...formData, backlogs: v})} />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-100 dark:border-slate-700">
@@ -404,7 +404,7 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate, loading, on
                    <div className="h-[1px] flex-1 bg-slate-100 dark:bg-slate-700 ml-4" />
                  </h4>
                  <div className="grid grid-cols-2 gap-4">
-                   <Input label="Percentage (%)" type="number" value={formData.tenthPercentage} onChange={v => setFormData({...formData, tenthPercentage: Number(v)})} />
+                   <Input label="Percentage (%)" type="number" step="0.01" value={formData.tenthPercentage} onChange={v => setFormData({...formData, tenthPercentage: v})} />
                    <Input label="Board Name" placeholder="CBSE/ICSE/SEB" value={formData.tenthBoard} onChange={v => setFormData({...formData, tenthBoard: v})} />
                    <div className="col-span-2">
                     <Input label="Year of Completion" value={formData.tenthYear} onChange={v => setFormData({...formData, tenthYear: v})} />
@@ -417,7 +417,7 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate, loading, on
                    <div className="h-[1px] flex-1 bg-slate-100 dark:border-slate-700 ml-4" />
                  </h4>
                  <div className="grid grid-cols-2 gap-4">
-                   <Input label="Percentage (%)" type="number" value={formData.twelfthPercentage} onChange={v => setFormData({...formData, twelfthPercentage: Number(v)})} />
+                   <Input label="Percentage (%)" type="number" step="0.01" value={formData.twelfthPercentage} onChange={v => setFormData({...formData, twelfthPercentage: v})} />
                    <Input label="Board Name" placeholder="CBSE/ICSE/SEB" value={formData.twelfthBoard} onChange={v => setFormData({...formData, twelfthBoard: v})} />
                    <div className="col-span-2">
                     <Input label="Year of Completion" value={formData.twelfthYear} onChange={v => setFormData({...formData, twelfthYear: v})} />
@@ -583,37 +583,19 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate, loading, on
 };
 
 const Input = ({ label, value, onChange, type = "text", icon, placeholder, step, min, max }: any) => {
-  const handleChange = (val: string) => {
-    if (type === "number") {
-      const numValue = parseFloat(val);
-      if (isNaN(numValue)) {
-        onChange(0);
-        return;
-      }
-      if (min !== undefined && numValue < min) {
-        onChange(min);
-        return;
-      }
-      if (max !== undefined && numValue > max) {
-        onChange(max);
-        return;
-      }
-      onChange(numValue);
-    } else {
-      onChange(val);
-    }
-  };
-
   return (
     <div className="space-y-2 group">
       <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest px-1 group-focus-within:text-indigo-500 transition-colors">{label}</label>
       <div className="relative">
         {icon && <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors">{icon}</div>}
         <input 
-          type={type === "number" ? "text" : type} 
+          type={type} 
+          step={step}
+          min={min}
+          max={max}
           value={value} 
           placeholder={placeholder}
-          onChange={e => handleChange(e.target.value)}
+          onChange={e => onChange(e.target.value)}
           className={`w-full ${icon ? "pl-12" : "px-5"} py-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-2xl text-xs sm:text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:text-white outline-none transition-all`}
         />
       </div>

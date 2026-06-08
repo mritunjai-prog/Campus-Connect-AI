@@ -47,7 +47,7 @@ export default function RecruiterAndJobDesk({
   // Job Approvals filter states
   const [jobQuery, setJobQuery] = useState("");
   const [jobTypeFilter, setJobTypeFilter] = useState<"all" | "placement" | "internship">("all");
-  const [jobApprovalStatus, setJobApprovalStatus] = useState<"all" | "pending" | "approved" | "rejected">("pending");
+  const [jobApprovalStatus, setJobApprovalStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [selectedJob, setSelectedJob] = useState<PlacementDrive | null>(null);
 
   // Form states to create custom drive direct from TPO Office (as system admin)

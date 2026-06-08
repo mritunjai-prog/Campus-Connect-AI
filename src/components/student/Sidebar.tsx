@@ -55,7 +55,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, profi
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center space-x-3 text-slate-900 dark:text-white font-bold text-xl"
+            className="flex items-center space-x-3 text-slate-900 dark:text-white font-bold text-xl cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => setActiveTab("dashboard")}
           >
             <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
               <Sparkles className="w-6 h-6 text-white" />

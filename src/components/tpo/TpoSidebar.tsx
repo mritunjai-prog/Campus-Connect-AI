@@ -29,6 +29,7 @@ export type TpoSubTab =
   | "jobs_approvals"
   | "applications_tracker"
   | "placement_analytics"
+  | "predictive_analytics"
   | "notifications_center"
   | "drive_management"
   | "reports_exports"
@@ -75,6 +76,7 @@ export default function TpoSidebar({
       items: [
         { id: "applications_tracker" as TpoSubTab, label: "Applications Tracker", icon: Layers },
         { id: "placement_analytics" as TpoSubTab, label: "Placement Analytics", icon: TrendingUp },
+        { id: "predictive_analytics" as TpoSubTab, label: "Predictive AI Forecast", icon: Sparkles },
       ]
     },
     {
@@ -97,7 +99,10 @@ export default function TpoSidebar({
     <aside className="w-full md:w-72 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 shadow-2xl z-20 h-full md:sticky md:top-0 md:h-screen" id="tpo-sidebar-navigation">
       {/* Brand Header */}
       <div className="p-6 border-b border-slate-800">
-        <div className="flex items-center space-x-3 text-white font-bold text-xl mb-4">
+        <div 
+          className="flex items-center space-x-3 text-white font-bold text-xl mb-4 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => setActiveTab("overview")}
+        >
           <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/30">
             <Sparkles className="w-5 h-5" />
           </div>
