@@ -148,7 +148,7 @@ import {
 
 // JWT Secret Key for Session Authentication
 const JWT_SECRET = process.env.JWT_SECRET || "campus_connect_ai_ultra_secret_key_2026";
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Prefer the explicit user-provided projectId from configuration over local container sandbox keys
 const actualProjectId = firebaseConfig.projectId;
