@@ -1,0 +1,332 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Represents a user account in the system",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["student", "tpo", "company"] },
+        "name": { "type": "string" },
+        "isApproved": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "email", "role", "name", "isApproved", "createdAt"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "In-depth profile details of a student",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "personalEmail": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "gender": { "type": "string" },
+        "dob": { "type": "string" },
+        "address": { "type": "string" },
+        "city": { "type": "string" },
+        "state": { "type": "string" },
+        "enrollmentNumber": { "type": "string" },
+        "branch": { "type": "string" },
+        "specialization": { "type": "string" },
+        "currentYear": { "type": "string" },
+        "graduationYear": { "type": "string" },
+        "cgpa": { "type": "number" },
+        "backlogs": { "type": "integer" },
+        "tenthPercentage": { "type": "number" },
+        "twelfthPercentage": { "type": "number" },
+        "diplomaPercentage": { "type": "number" },
+        "linkedinUrl": { "type": "string" },
+        "githubUrl": { "type": "string" },
+        "portfolioUrl": { "type": "string" },
+        "skills": { "type": "array" },
+        "resumeUrl": { "type": "string" },
+        "resumeFileName": { "type": "string" },
+        "resumeScore": { "type": "integer" },
+        "profileCompleteness": { "type": "integer" },
+        "verificationStatus": { "type": "string", "enum": ["draft", "completed", "pending", "verified"] },
+        "resumeAnalysis": { "type": "object" }
+      },
+      "required": ["id", "userId", "email", "name", "verificationStatus"]
+    },
+    "Company": {
+      "title": "Company",
+      "description": "Information about recruiters and company brands",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "website": { "type": "string" },
+        "isVerified": { "type": "boolean" },
+        "contactPerson": { "type": "string" },
+        "phone": { "type": "string" }
+      },
+      "required": ["id", "userId", "email", "name"]
+    },
+    "Recruiter": {
+      "title": "Recruiter Profile",
+      "description": "Identical structure mapping company profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "website": { "type": "string" },
+        "isVerified": { "type": "boolean" },
+        "contactPerson": { "type": "string" },
+        "phone": { "type": "string" }
+      },
+      "required": ["id", "userId", "email", "name"]
+    },
+    "Job": {
+      "title": "Job / Placement Drive",
+      "description": "A recruitment campaign or placement drive posted by recruiter or TPO",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "companyId": { "type": "string" },
+        "companyName": { "type": "string" },
+        "jobRole": { "type": "string" },
+        "type": { "type": "string", "enum": ["placement", "internship", "job"] },
+        "location": { "type": "string" },
+        "packageLPA": { "type": "number" },
+        "branchEligibility": { "type": "array" },
+        "minimumCgpa": { "type": "number" },
+        "allowedBacklogs": { "type": "integer" },
+        "jobDescription": { "type": "string" },
+        "skillsRequired": { "type": "array" },
+        "driveDate": { "type": "string" },
+        "applicationDeadline": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "companyId", "companyName", "jobRole", "type", "packageLPA"]
+    },
+    "MockInterview": {
+      "title": "Mock Interview Session",
+      "description": "An AI-powered mock interview session for a student",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "targetRole": { "type": "string" },
+        "difficulty": { "type": "string" },
+        "questions": { "type": "array" },
+        "answers": { "type": "array" },
+        "evaluation": { "type": "object" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "studentId", "targetRole", "createdAt"]
+    },
+    "Application": {
+      "title": "Job Application",
+      "description": "A student application to a specific job placement drive",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "driveId": { "type": "string" },
+        "companyId": { "type": "string" },
+        "companyName": { "type": "string" },
+        "jobRole": { "type": "string" },
+        "packageLPA": { "type": "number" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "studentEmail": { "type": "string" },
+        "studentBranch": { "type": "string" },
+        "studentCgpa": { "type": "number" },
+        "studentBacklogs": { "type": "integer" },
+        "resumeUrl": { "type": "string" },
+        "resumeScore": { "type": "integer" },
+        "appliedDate": { "type": "string" },
+        "status": { "type": "string" },
+        "eligibilityExplanation": { "type": "string" },
+        "feedback": { "type": "string" }
+      },
+      "required": ["id", "driveId", "companyId", "studentId", "status"]
+    },
+    "Interview": {
+      "title": "Interview Schedule",
+      "description": "An interview scheduled by recruiters for candidates",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "applicationId": { "type": "string" },
+        "driveId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "companyId": { "type": "string" },
+        "companyName": { "type": "string" },
+        "jobRole": { "type": "string" },
+        "interviewDate": { "type": "string" },
+        "interviewTime": { "type": "string" },
+        "type": { "type": "string" },
+        "linkOrVenue": { "type": "string" },
+        "status": { "type": "string" },
+        "feedback": { "type": "string" }
+      },
+      "required": ["id", "applicationId", "studentId", "companyId", "interviewDate", "interviewTime", "status"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "In-app alert generated for users upon certain actions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "isRead": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "title", "message", "isRead", "createdAt"]
+    },
+    "Report": {
+      "title": "Placement Report",
+      "description": "A cache or record of analytics reports",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "data": { "type": "object" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "createdAt"]
+    },
+    "ResumeScore": {
+      "title": "Resume Score",
+      "description": "Holds textual and analysis details for scanned resumes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "fileName": { "type": "string" },
+        "resumeText": { "type": "string" },
+        "score": { "type": "integer" },
+        "analysis": { "type": "object" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "studentId", "score", "createdAt"]
+    },
+    "EligibilityResult": {
+      "title": "Eligibility Result",
+      "description": "Parsed result of eligibility verification from the AI compliance checks",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "jobId": { "type": "string" },
+        "isEligible": { "type": "boolean" },
+        "cgpaMetric": { "type": "object" },
+        "backlogsMetric": { "type": "object" },
+        "branchMetric": { "type": "object" },
+        "skillsMetric": { "type": "object" },
+        "reasons": { "type": "array" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "studentId", "jobId", "isEligible", "createdAt"]
+    },
+    "VerificationRequest": {
+      "title": "Verification Request",
+      "description": "Represents a student profile verification event managed by TPO",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "studentEmail": { "type": "string" },
+        "submittedAt": { "type": "string" },
+        "status": { "type": "string" },
+        "feedback": { "type": "string" },
+        "decidedAt": { "type": "string" },
+        "decidedBy": { "type": "string" }
+      },
+      "required": ["id", "studentId", "studentName", "studentEmail", "submittedAt", "status"]
+    },
+    "TpoOtp": {
+      "title": "TPO OTP token",
+      "description": "6-digit OTP verification token for TPO Dashboard logins",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "otp": { "type": "string" },
+        "expiresAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "otp", "expiresAt"]
+    }
+  },
+  "firestore": {
+    "/tpoOtps/{userId}": {
+      "schema": "TpoOtp",
+      "description": "Path to active TPO multi-factor OTP validation tokens"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Path to user documents"
+    },
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Path to student profiles"
+    },
+    "/companies/{companyId}": {
+      "schema": "Company",
+      "description": "Path to company recruiter profiles"
+    },
+    "/recruiters/{recruiterId}": {
+      "schema": "Recruiter",
+      "description": "Alternative path to recruiter profiles"
+    },
+    "/jobs/{jobId}": {
+      "schema": "Job",
+      "description": "Path to job placement drives"
+    },
+    "/internships/{internshipId}": {
+      "schema": "Job",
+      "description": "Path to dedicated internships postings"
+    },
+    "/applications/{applicationId}": {
+      "schema": "Application",
+      "description": "Path to application submissions"
+    },
+    "/interviews/{interviewId}": {
+      "schema": "Interview",
+      "description": "Path to interview meetings"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "Path to notifications"
+    },
+    "/reports/{reportId}": {
+      "schema": "Report",
+      "description": "Path to reports and caches"
+    },
+    "/resumeScores/{resumeScoreId}": {
+      "schema": "ResumeScore",
+      "description": "Path to historical resume scores"
+    },
+    "/resumeAnalyses/{analysisId}": {
+      "schema": "ResumeScore",
+      "description": "Alternative path to resume analyses scores"
+    },
+    "/mockInterviews/{interviewId}": {
+      "schema": "MockInterview",
+      "description": "Path to AI mock interview sessions"
+    },
+    "/eligibilityResults/{eligibilityId}": {
+      "schema": "EligibilityResult",
+      "description": "Path to eligibility verification records"
+    },
+    "/verificationRequests/{requestId}": {
+      "schema": "VerificationRequest",
+      "description": "Path to university physical/academic status verification requests"
+    }
+  }
+}

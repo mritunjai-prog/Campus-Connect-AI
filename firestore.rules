@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Restrict administrative security controls to verified TPOs only
+    match /systemSettings/adminSecurity {
+      allow read, write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "tpo" && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == "verified";
+    }
+
+    // Allow general system settings but not adminSecurity
+    match /systemSettings/{anyDoc} {
+      allow read, write: if anyDoc != "adminSecurity";
+    }
+
+    // Standard collections and other sandbox/test collections supporting full operational features
+    match /{collection}/{document=**} {
+      allow read, write: if collection != "systemSettings";
+    }
+  }
+}

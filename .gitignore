@@ -1,0 +1,13 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Runtime data files (server-generated, should not be committed)
+local_store.json
+request_logs.txt
+uploads/
