@@ -4307,10 +4307,10 @@ app.post("/api/ai/resume-analyzer", authenticateToken, async (req: any, res) => 
           } else {
             activeMimeType = "application/pdf";
           }
-          console.log(`[Resume Intelligence] Located resume disk binary file: ${filePath}`);
-        } catch (fsErr: any) {
-          console.error(`[Resume Intelligence] Unable to read binary file from disk:`, fsErr);
+          console.log(`[Resume Intelligence] Located resume in Firebase Storage: resumes/${diskFileName}`);
         }
+      } catch (fsErr: any) {
+        console.error(`[Resume Intelligence] Unable to read binary file from storage:`, fsErr);
       }
     }
 
