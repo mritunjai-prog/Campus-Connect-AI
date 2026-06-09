@@ -778,13 +778,22 @@ const generateContentResilient = async (
 ) => {
   const primaryModel = params.model || "gemini-2.5-flash";
   const backupModel = "gemini-2.5-flash";
+  const TIMEOUT_MS = 10000; // 10 seconds max
 
   try {
     console.log(`[Resilient AI] Attempting generation with primary model: ${primaryModel}`);
-    const response = await client.models.generateContent({
+    
+    // Add a strict timeout to prevent the SDK from silently retrying for 8 minutes
+    const generatePromise = client.models.generateContent({
       ...params,
       model: primaryModel
     });
+    
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error("Timeout: Gemini API took too long to respond.")), TIMEOUT_MS)
+    );
+
+    const response = await Promise.race([generatePromise, timeoutPromise]) as any;
     return response;
   } catch (err: any) {
     const errMsg = String(err.message || "").toLowerCase();
@@ -793,10 +802,14 @@ const generateContentResilient = async (
     if (isQuotaError && primaryModel !== backupModel) {
       console.warn(`[Resilient AI] Primary model ${primaryModel} failed with quota/rate limits. Silently retrying with backup model: ${backupModel}...`);
       try {
-        const response = await client.models.generateContent({
+        const generatePromise = client.models.generateContent({
           ...params,
           model: backupModel
         });
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error("Timeout: Gemini API took too long to respond.")), TIMEOUT_MS)
+        );
+        const response = await Promise.race([generatePromise, timeoutPromise]) as any;
         console.log(`[Resilient AI] Backup model ${backupModel} succeeded!`);
         return response;
       } catch (backupErr: any) {
