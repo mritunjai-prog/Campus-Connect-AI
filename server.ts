@@ -776,8 +776,8 @@ const generateContentResilient = async (
     config?: any;
   }
 ) => {
-  const primaryModel = params.model || "gemini-1.5-flash";
-  const backupModel = "gemini-1.5-flash";
+  const primaryModel = params.model || "gemini-2.5-flash";
+  const backupModel = "gemini-2.5-flash";
 
   try {
     console.log(`[Resilient AI] Attempting generation with primary model: ${primaryModel}`);
@@ -2595,7 +2595,7 @@ app.post("/api/ai/chat", authenticateToken, async (req: any, res) => {
     `;
 
     const chatRes = await generateContentResilient(ai, {
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
     });
 
@@ -2659,7 +2659,7 @@ app.post("/api/ai/predictive-analytics", authenticateToken, async (req: any, res
     `;
 
     const rawResponse = await generateContentResilient(ai, {
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
     });
 
@@ -2705,7 +2705,7 @@ app.post("/api/ai/optimize-slots", authenticateToken, async (req: any, res) => {
     `;
 
     const rawResponse = await generateContentResilient(ai, {
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
     });
 
@@ -3048,7 +3048,7 @@ app.post("/api/opportunities/discover", authenticateToken, async (req: any, res)
         `;
 
         const response = await generateContentResilient(ai, {
-          model: "gemini-1.5-flash",
+          model: "gemini-2.5-flash",
           contents: prompt,
           config: {
             responseMimeType: "application/json",
@@ -4284,7 +4284,7 @@ app.post("/api/ai/resume-analyzer", authenticateToken, async (req: any, res) => 
           }`;
           
           const fallbackRes = await generateContentResilient(parserAI, {
-            model: "gemini-1.5-flash",
+            model: "gemini-2.5-flash",
             contents: parsePrompt,
             config: {
               responseMimeType: "application/json"
@@ -4431,7 +4431,7 @@ app.post("/api/ai/resume-analyzer", authenticateToken, async (req: any, res) => 
     let parsedRecommendations: any = {};
     try {
       const geminiRes = await generateContentResilient(ai, {
-        model: "gemini-1.5-flash",
+        model: "gemini-2.5-flash",
         contents: prompt,
         config: { responseMimeType: "application/json" }
       });
@@ -4591,7 +4591,7 @@ app.post("/api/ai/rewrite-bullet", authenticateToken, async (req: any, res) => {
     }`;
 
     const geminiRes = await generateContentResilient(ai, {
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json"
@@ -4720,7 +4720,7 @@ app.get("/api/ai/job-recommendations", authenticateToken, async (req: any, res) 
         Return JSON format: { "recommendations": [ { "driveId": string, "matchScore": number, "explanation": string, "skillGap": string[], "careerSuggestions": string[] } ] }`;
 
         const aiRes = await generateContentResilient(ai, {
-          model: "gemini-1.5-flash",
+          model: "gemini-2.5-flash",
           contents: prompt,
           config: { responseMimeType: "application/json" }
         });
@@ -4823,7 +4823,7 @@ app.post("/api/ai/mock-interview/start", authenticateToken, async (req: any, res
 
     try {
       const response = await generateContentResilient(ai, {
-        model: "gemini-1.5-flash",
+        model: "gemini-2.5-flash",
         contents: prompt,
         config: {
           responseMimeType: "application/json",
@@ -4894,7 +4894,7 @@ app.post("/api/ai/mock-interview/evaluate", authenticateToken, async (req: any, 
 
     try {
       const response = await generateContentResilient(ai, {
-        model: "gemini-1.5-flash",
+        model: "gemini-2.5-flash",
         contents: prompt,
         config: {
           responseMimeType: "application/json",
@@ -5220,7 +5220,7 @@ app.post("/api/profile/upload-resume", authenticateToken, async (req: any, res) 
         if (ai) {
           try {
             const geminiRes = await generateContentResilient(ai, {
-              model: "gemini-1.5-flash",
+              model: "gemini-2.5-flash",
               contents: [
                 {
                   inlineData: {
@@ -5251,7 +5251,7 @@ app.post("/api/profile/upload-resume", authenticateToken, async (req: any, res) 
         if (ai) {
           try {
             const geminiRes = await generateContentResilient(ai, {
-              model: "gemini-1.5-flash",
+              model: "gemini-2.5-flash",
               contents: [
                 {
                   inlineData: {
@@ -5466,7 +5466,7 @@ app.post("/api/ai/copilot-rankings", authenticateToken, async (req: any, res) =>
         Do not output duplicate candidates. Rank order from highest aiScore down.`;
 
         const response = await generateContentResilient(ai, {
-          model: "gemini-1.5-flash",
+          model: "gemini-2.5-flash",
           contents: prompt,
           config: {
             responseMimeType: "application/json",
