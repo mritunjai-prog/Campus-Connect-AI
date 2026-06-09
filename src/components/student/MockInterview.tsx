@@ -170,26 +170,26 @@ export const MockInterview: React.FC<MockInterviewProps> = ({
             exit={{ opacity: 0, scale: 0.95 }}
             className="max-w-4xl mx-auto space-y-8"
           >
-            <div className="bg-white border border-slate-200 rounded-[3rem] p-10 shadow-sm space-y-10">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[3rem] p-10 shadow-sm space-y-10">
                <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                     <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center border border-indigo-100">
-                        <MessageSquareQuote className="w-5 h-5 text-indigo-600" />
+                     <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center border border-indigo-100 dark:border-indigo-500/20">
+                        <MessageSquareQuote className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                      </div>
                      <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Recruiter Query {currentIndex + 1} of {questions.length}</span>
                   </div>
-                  <div className="w-32 bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                  <div className="w-32 bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
                      <div className="bg-indigo-600 h-full rounded-full transition-all duration-500" style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}></div>
                   </div>
                </div>
 
                <div className="space-y-4">
-                  <h3 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight italic">
+                  <h3 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-tight italic">
                     "{questions[currentIndex]}"
                   </h3>
-                  <div className="flex items-center space-x-4 bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100/50 w-fit">
+                  <div className="flex items-center space-x-4 bg-indigo-50/50 dark:bg-indigo-900/20 p-3 rounded-2xl border border-indigo-100/50 dark:border-indigo-500/20 w-fit">
                      <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
-                     <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">AI Agent Listening...</span>
+                     <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">AI Agent Listening...</span>
                   </div>
                </div>
 
@@ -206,7 +206,7 @@ export const MockInterview: React.FC<MockInterviewProps> = ({
                     onChange={e => setCurrentAnswer(e.target.value)}
                     rows={6}
                     placeholder="Provide your professional response here..."
-                    className="w-full px-8 py-8 bg-slate-50 border border-slate-200 rounded-[2.5rem] text-sm md:text-base font-medium focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all shadow-inner leading-relaxed"
+                    className="w-full px-8 py-8 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] text-sm md:text-base text-slate-900 dark:text-white font-medium focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all shadow-inner leading-relaxed"
                   />
                </div>
 
