@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send, Bot, User, Loader2, Sparkles } from "lucide-react";
+import { Sparkles, Send, Bot, User, X, Loader2, MessageSquare } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "motion/react";
 
 interface ChatMessage {
@@ -127,7 +128,13 @@ export const StudentChatbot: React.FC<StudentChatbotProps> = ({ token, apiBaseUr
                       {msg.sender === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                     </div>
                     <div className={`p-3 rounded-2xl text-sm ${msg.sender === "user" ? "bg-indigo-600 text-white rounded-br-none" : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-bl-none shadow-sm"}`}>
-                      {msg.text}
+                      {msg.sender === "user" ? (
+                        msg.text
+                      ) : (
+                        <div className="markdown-body">
+                          <ReactMarkdown>{msg.text}</ReactMarkdown>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -2587,7 +2587,8 @@ app.post("/api/ai/chat", authenticateToken, async (req: any, res) => {
     The student says: "${message}"
 
     Rules:
-    - Keep responses concise, supportive, and formatted in clean markdown.
+    - Keep responses VERY short, maximum 2-3 sentences.
+    - If explaining a process, use exactly 2-3 concise bullet points.
     - If they ask about specific upcoming drives, inform them they can check the "Opportunities" tab.
     - If they ask about resumes, suggest they use the "Resume Center" to get a detailed ATS score.
     - Do NOT hallucinate specific company names unless specifically asked in a hypothetical scenario.
