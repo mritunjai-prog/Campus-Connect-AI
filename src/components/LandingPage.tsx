@@ -287,16 +287,7 @@ export default function LandingPage({
     }
   }, [location.pathname]);
 
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  
-  // Track mouse position for the blurry glowing cursor effect
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+
 
   // Automatic slide cycle for Testimonials Carousel
   useEffect(() => {
@@ -932,19 +923,9 @@ export default function LandingPage({
   const isDark = theme === "dark";
 
   return (
-    <div className={`min-h-screen ${isDark ? 'bg-[#030408] text-slate-100' : 'bg-[#f8fafc] text-slate-900'} flex flex-col font-sans overflow-x-hidden cursor-none ${isDark ? 'selection:bg-indigo-900/40' : 'selection:bg-indigo-100'}`} id="campusconnect-main-landing">
+    <div className={`min-h-screen ${isDark ? 'bg-[#030408] text-slate-100' : 'bg-[#f8fafc] text-slate-900'} flex flex-col font-sans overflow-x-hidden ${isDark ? 'selection:bg-indigo-900/40' : 'selection:bg-indigo-100'}`} id="campusconnect-main-landing">
       
-      {/* Custom Blurry Mouse Follower */}
-      <div 
-        className="pointer-events-none fixed z-[9999] w-72 h-72 rounded-full bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 blur-[60px] transition-transform duration-500 ease-out will-change-transform mix-blend-screen"
-        style={{ transform: `translate(${mousePosition.x - 144}px, ${mousePosition.y - 144}px)` }}
-      />
-      
-      {/* Custom Solid Mouse Dot */}
-      <div 
-        className="pointer-events-none fixed z-[10000] w-3 h-3 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] border border-indigo-200 transition-transform duration-75 ease-out will-change-transform"
-        style={{ transform: `translate(${mousePosition.x - 6}px, ${mousePosition.y - 6}px)` }}
-      />
+
 
       {/* High impact grid pattern background */}
       <div className={`absolute inset-0 ${isDark ? 'bg-[#030408] bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)]' : 'bg-[#f8fafc] bg-[linear-gradient(to_right,#0f172a04_1px,transparent_1px),linear-gradient(to_bottom,#0f172a04_1px,transparent_1px)]'} bg-[size:40px_40px] pointer-events-none`}></div>

@@ -11,6 +11,7 @@ import { auth } from "./lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { AnimatePresence, motion } from "motion/react";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { CustomCursor } from "./components/shared/CustomCursor";
 
 export default function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem("campus_connect_jwt"));
@@ -266,8 +267,10 @@ export default function App() {
   };
 
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={getRouteKey(location.pathname)}>
+    <>
+      <CustomCursor />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={getRouteKey(location.pathname)}>
         <Route path="/" element={renderLandingOrRedirect()} />
         <Route path="/features" element={renderLandingOrRedirect()} />
         <Route path="/dashboards" element={renderLandingOrRedirect()} />
@@ -348,6 +351,7 @@ export default function App() {
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-    </AnimatePresence>
+      </AnimatePresence>
+    </>
   );
 }

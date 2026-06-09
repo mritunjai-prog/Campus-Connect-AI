@@ -3979,7 +3979,7 @@ async function parseWithAffinda(fileBuffer: Buffer, fileName: string, mimeType: 
 
       if (collectionsRes.ok) {
         const colData = (await collectionsRes.json()) as any;
-        const results = colData.results || [];
+        const results = Array.isArray(colData) ? colData : (colData.results || []);
         console.log(`[Affinda] Found ${results.length} collections in workspace: ${workspaceKey}`);
         
         // Match the Resume Parser collection/document type dynamically
@@ -3989,7 +3989,7 @@ async function parseWithAffinda(fileBuffer: Buffer, fileName: string, mimeType: 
           (c.name && c.name.toLowerCase().includes("resume"))
         );
         if (resumeCol) {
-          collectionKey = resumeCol.key;
+          collectionKey = resumeCol.identifier || resumeCol.key;
           console.log(`[Affinda] Dynamic Collection Key successfully resolved: ${collectionKey}`);
         }
       } else {
@@ -4001,7 +4001,7 @@ async function parseWithAffinda(fileBuffer: Buffer, fileName: string, mimeType: 
   }
 
   // 1.5 Fallback: Query all workspaces to find a valid workspace and resume collection if needed
-  if (!workspaceKey) {
+  if (!workspaceKey || !collectionKey) {
     try {
       console.log("[Affinda] Fetching workspaces dynamically...");
       const workspacesRes = await fetch("https://api.affinda.com/v3/workspaces", {
@@ -4014,24 +4014,13 @@ async function parseWithAffinda(fileBuffer: Buffer, fileName: string, mimeType: 
 
       if (workspacesRes.ok) {
         const wsData = (await workspacesRes.json()) as any;
-        const results = wsData.results || [];
+        const results = Array.isArray(wsData) ? wsData : (wsData.results || []);
         console.log(`[Affinda] Found ${results.length} workspaces.`);
         
-        if (results.length > 0) {
+        if (results.length > 0 && !workspaceKey) {
           const activeWorkspace = results.find((w: any) => w.collections && w.collections.length > 0) || results[0];
-          workspaceKey = activeWorkspace.key;
+          workspaceKey = activeWorkspace.identifier || activeWorkspace.key;
           console.log(`[Affinda] Fallback Workspace resolved: ${workspaceKey}`);
-          
-          const collections = activeWorkspace.collections || [];
-          if (collections.length > 0) {
-            const resumeCol = collections.find((c: any) => 
-              c.extractor?.uniqueIdentifier === "resume" || 
-              c.extractor === "resume" ||
-              (c.name && c.name.toLowerCase().includes("resume"))
-            );
-            collectionKey = resumeCol ? resumeCol.key : collections[0].key;
-            console.log(`[Affinda] Matching collection resolved from fallback workspace: ${collectionKey}`);
-          }
         }
       }
     } catch (wsErr: any) {
@@ -4138,7 +4127,7 @@ async function parseWithAffinda(fileBuffer: Buffer, fileName: string, mimeType: 
   }
 
   console.log(`[Affinda] Uploading file to Affinda: ${fileName} (${mimeType}). Collection: ${collectionKey || "N/A"}, Workspace: ${workspaceKey || "N/A"}`);
-  const uploadRes = await fetch("https://api.affinda.com/v3/documents", {
+  const uploadRes = await fetch("https://api.affinda.com/v3/documents?wait=true", {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${apiKey}`,
@@ -4164,9 +4153,14 @@ async function parseWithAffinda(fileBuffer: Buffer, fileName: string, mimeType: 
   let attempts = 0;
   let finalDoc = docData;
   while (attempts < 20) {
-    const isReady = finalDoc.meta?.ready || finalDoc.meta?.status === "completed" || finalDoc.data?.name;
-    if (isReady) {
-      console.log(`[Affinda] Document parsing completed after ${attempts} retries.`);
+    const isDataPopulated = finalDoc.data && (finalDoc.data.name || (finalDoc.data.skills && finalDoc.data.skills.length > 0));
+    const isReady = (finalDoc.meta?.ready || finalDoc.meta?.status === "completed") && isDataPopulated;
+    
+    // Also break if it explicitly failed
+    const isFailed = finalDoc.meta?.failed || finalDoc.meta?.status === "failed" || finalDoc.error?.errorCode;
+
+    if (isReady || isFailed) {
+      console.log(`[Affinda] Document parsing completed after ${attempts} retries. Status: ${isFailed ? 'Failed' : 'Success'}`);
       break;
     }
 
