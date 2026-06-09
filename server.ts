@@ -2598,10 +2598,12 @@ app.post("/api/ai/chat", authenticateToken, async (req: any, res) => {
       model: "gemini-2.5-flash",
       contents: prompt,
     });
+    
+    console.log("[AI Chatbot] Successfully generated response");
 
-    res.json({ reply: chatRes || "I'm sorry, I encountered an error processing that. Could you rephrase?" });
-  } catch (error) {
-    console.error("[AI Chatbot] Error:", error);
+    res.json({ reply: chatRes?.text || "I'm sorry, I encountered an error processing that. Could you rephrase?" });
+  } catch (error: any) {
+    console.error("[AI Chatbot] Explicit Error Caught:", error?.message || error);
     res.status(500).json({ error: "Failed to process chat message" });
   }
 });
@@ -4748,12 +4750,12 @@ app.get("/api/ai/job-recommendations", authenticateToken, async (req: any, res) 
       
       // Branch alignment criteria
       const isBranchMatch = drive.branchEligibility.length === 0 || 
-        drive.branchEligibility.map(b => b.toLowerCase()).includes(student.branch.toLowerCase());
+        drive.branchEligibility.map(b => b.toLowerCase()).includes((student.branch || "").toLowerCase());
       const branchPoints = isBranchMatch ? 30 : 5;
 
       // Skill overlap index
       const driveSkills = drive.skillsRequired.map(s => s.toLowerCase());
-      const studentSkills = student.skills.map(s => s.toLowerCase());
+      const studentSkills = (student.skills || []).map(s => s.toLowerCase());
       const matched = driveSkills.filter(s => studentSkills.includes(s));
       const skillPoints = driveSkills.length > 0 ? Math.round((matched.length / driveSkills.length) * 30) : 30;
 
