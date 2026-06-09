@@ -224,6 +224,10 @@ class UnifiedQuerySnapshot {
 }
 
 const LOCAL_DB_PATH = path.join(process.cwd(), "local_store.json");
+const UPLOADS_DIR = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
 
 function readLocalDb(): Record<string, Record<string, any>> {
   try {
@@ -2601,93 +2605,6 @@ app.post("/api/ai/chat", authenticateToken, async (req: any, res) => {
 });
 
 // -------------------------------------------------------------------
-// AI JOB RECOMMENDATIONS - Student Feature
-// -------------------------------------------------------------------
-app.get("/api/ai/job-recommendations", authenticateToken, async (req: any, res) => {
-  try {
-    const studentDoc = await webGetDoc(webDoc(webDb, "students", req.user.uid));
-    const profile = studentDoc.exists() ? studentDoc.data() : null;
-
-    const jobsSnap = await webGetDocs(webCollection(webDb, "jobs"));
-    const drives = jobsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-    if (drives.length === 0) {
-      return res.json({ recommendations: [] });
-    }
-
-    // Rule-based local fallback matcher (always works, no AI needed)
-    const computeMatchScore = (drive: any, student: any) => {
-      let score = 50;
-      const studentSkills: string[] = (student?.skills || []).map((s: string) => s.toLowerCase());
-      const driveSkillsRaw = drive.skillsRequired || "";
-      const driveSkills: string[] = driveSkillsRaw.toLowerCase().split(",").map((s: string) => s.trim()).filter(Boolean);
-      const skillMatches = driveSkills.filter((s: string) => studentSkills.some((ss: string) => ss.includes(s) || s.includes(ss)));
-      score += Math.min(skillMatches.length * 8, 30);
-      const studentBranch = (student?.branch || "").toLowerCase();
-      // Handle branchEligibility as either array or comma-separated string
-      const branchRaw = drive.branchEligibility;
-      const branchList: string[] = Array.isArray(branchRaw)
-        ? branchRaw.map((b: string) => b.toLowerCase())
-        : (branchRaw || "").toLowerCase().split(",").map((b: string) => b.trim()).filter(Boolean);
-      const branchOk = branchList.length === 0 || branchList.some((b: string) => b.includes(studentBranch) || studentBranch.includes(b));
-      if (branchOk) score += 15;
-      const cgpaDiff = (student?.cgpa || 0) - (drive.minimumCgpa || 0);
-      if (cgpaDiff >= 1) score += 5;
-      else if (cgpaDiff < 0) score -= 20;
-      return Math.min(Math.max(score, 30), 99);
-    };
-
-    const buildExplanation = (drive: any, student: any, score: number) => {
-      const branch = student?.branch || "your branch";
-      const role = drive.jobRole || "this role";
-      if (score >= 85) return `Strong match! Your ${branch} background and skills align closely with ${role} requirements.`;
-      if (score >= 70) return `Good fit for ${role}. Strengthening relevant skills could improve your candidacy further.`;
-      return `You meet the basic criteria for ${role}. Focus on the required technical skills to boost your match.`;
-    };
-
-    const recommendations = drives
-      .filter((d: any) => d.approvalStatus === "approved" && d.status === "active")
-      .map((drive: any) => ({
-        drive,
-        matchScore: computeMatchScore(drive, profile),
-        explanation: buildExplanation(drive, profile, computeMatchScore(drive, profile))
-      }))
-      .sort((a: any, b: any) => b.matchScore - a.matchScore)
-      .slice(0, 5);
-
-    // Try AI enhancement but don't fail if it's unavailable
-    try {
-      const ai = getGenerativeModel();
-      if (ai) {
-        const prompt = `You are an AI Job Matcher. Match this student with the available jobs.
-Student: skills=${JSON.stringify(profile?.skills || [])}, branch="${profile?.branch}", cgpa=${profile?.cgpa || 0}
-Jobs: ${JSON.stringify(drives.filter((d: any) => d.status === "active").slice(0, 8).map((d: any) => ({ id: d.id, role: d.jobRole, skills: d.skillsRequired, branch: d.branchEligibility })))}
-Output STRICTLY valid JSON only (no markdown):
-{"recommendations":[{"driveId":"id","matchScore":95,"explanation":"Why this is a great match"}]}`;
-
-        const rawResponse = await generateContentResilient(ai, { model: "gemini-1.5-flash-latest", contents: prompt });
-        const text = rawResponse.text || "";
-        let cleaned = text.replace(/```json/g, "").replace(/```/g, "").trim();
-        const parsed = JSON.parse(cleaned);
-        const aiRecs = (parsed.recommendations || []).map((rec: any) => {
-          const drive = drives.find((d: any) => d.id === rec.driveId);
-          return drive ? { drive, matchScore: rec.matchScore, explanation: rec.explanation } : null;
-        }).filter(Boolean);
-
-        if (aiRecs.length > 0) {
-          return res.json({ recommendations: aiRecs.slice(0, 5) });
-        }
-      }
-    } catch (aiErr: any) {
-      console.log("[Recommender] Gemini unavailable in sandbox mode, activating rule-based matcher fallback.");
-    }
-
-    res.json({ recommendations });
-  } catch (error) {
-    console.error("[Job Recommendations] Error:", error);
-    res.status(500).json({ error: "Failed to generate recommendations" });
-  }
-});
 
 // -------------------------------------------------------------------
 // AI PREDICTIVE ANALYTICS - TPO Feature
@@ -4291,12 +4208,10 @@ app.post("/api/ai/resume-analyzer", authenticateToken, async (req: any, res) => 
       const diskFileName = urlParts[urlParts.length - 1];
 
       try {
-        const bucket = getStorage().bucket();
-        const file = bucket.file(`resumes/${diskFileName}`);
-        const [exists] = await file.exists();
+        const filePath = path.join(UPLOADS_DIR, diskFileName);
+        const exists = fs.existsSync(filePath);
         if (exists) {
-          const [buffer] = await file.download();
-          fileBuffer = buffer;
+          fileBuffer = fs.readFileSync(filePath);
           activeFileName = studentCheck.resumeFileName || diskFileName;
           if (diskFileName.endsWith(".docx")) {
             activeMimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
@@ -4307,10 +4222,10 @@ app.post("/api/ai/resume-analyzer", authenticateToken, async (req: any, res) => 
           } else {
             activeMimeType = "application/pdf";
           }
-          console.log(`[Resume Intelligence] Located resume in Firebase Storage: resumes/${diskFileName}`);
+          console.log(`[Resume Intelligence] Located resume disk binary file: ${filePath}`);
         }
       } catch (fsErr: any) {
-        console.error(`[Resume Intelligence] Unable to read binary file from storage:`, fsErr);
+        console.error(`[Resume Intelligence] Unable to read binary file from disk:`, fsErr);
       }
     }
 
@@ -5120,15 +5035,12 @@ app.put("/api/notifications/read", authenticateToken, async (req: any, res) => {
 
 
 /* --- 8. RESUME FILE UPLOAD TO SERVER STORAGE --- */
-app.get("/uploads/:filename", async (req, res) => {
-  try {
-    const bucket = getStorage().bucket();
-    const file = bucket.file(`photos/${req.params.filename}`);
-    const [exists] = await file.exists();
-    if (!exists) return res.status(404).end();
-    file.createReadStream().on('error', () => res.status(404).end()).pipe(res);
-  } catch (err) {
-    res.status(500).end();
+app.get("/uploads/:filename", (req, res) => {
+  const filePath = path.join(UPLOADS_DIR, req.params.filename);
+  if (fs.existsSync(filePath)) {
+    res.sendFile(filePath);
+  } else {
+    res.status(404).end();
   }
 });
 
@@ -5183,10 +5095,9 @@ app.post("/api/profile/upload-resume", authenticateToken, async (req: any, res) 
 
     const buffer = Buffer.from(base64DataCleaned, 'base64');
     
-    const bucket = getStorage().bucket();
-    const file = bucket.file(`resumes/${uniqueName}`);
-    await file.save(buffer, { metadata: { contentType: mimeType } });
-    console.log(`[ResumeUpload] File written to Firebase Storage: resumes/${uniqueName}`);
+    const filePath = path.join(UPLOADS_DIR, uniqueName);
+    fs.writeFileSync(filePath, buffer);
+    console.log(`[ResumeUpload] File written to disk: ${filePath}`);
 
     const resumeUrl = `/api/resume/download/${uniqueName}`;
 
@@ -5402,9 +5313,8 @@ app.post("/api/profile/upload-photo", authenticateToken, async (req: any, res) =
 
     const buffer = Buffer.from(base64DataCleaned, 'base64');
     
-    const bucket = getStorage().bucket();
-    const file = bucket.file(`photos/${uniqueName}`);
-    await file.save(buffer, { metadata: { contentType: mimeType } });
+    const filePath = path.join(UPLOADS_DIR, uniqueName);
+    fs.writeFileSync(filePath, buffer);
 
     const photoUrl = `/uploads/${uniqueName}`;
 
@@ -5647,9 +5557,8 @@ app.get("/api/resume/download/:filename", async (req, res) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   try {
-    const bucket = getStorage().bucket();
-    const file = bucket.file(`resumes/${filename}`);
-    const [exists] = await file.exists();
+    const filePath = path.join(UPLOADS_DIR, filename);
+    const exists = fs.existsSync(filePath);
     
     if (exists) {
       // Determine target name (prefer a query param "name", then filename)
@@ -5680,7 +5589,7 @@ app.get("/api/resume/download/:filename", async (req, res) => {
         res.setHeader("Content-Disposition", `attachment; filename="${safeDisplayName}"`);
       }
       
-      file.createReadStream().on('error', () => res.status(500).end()).pipe(res);
+      fs.createReadStream(filePath).pipe(res);
     } else {
       res.status(404).send("File not found or expired.");
     }
