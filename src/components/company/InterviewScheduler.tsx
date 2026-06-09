@@ -102,8 +102,28 @@ export default function InterviewScheduler({
 
       {/* Grid listing */}
       {filteredInts.length === 0 ? (
-        <div className="py-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-center text-slate-500 dark:text-slate-400 text-xs">
-          No booked interview timelines found matching selection.
+        <div className="py-24 px-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl text-center flex flex-col items-center justify-center shadow-sm relative overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 border border-indigo-100 dark:border-indigo-500/20 relative z-10 shadow-inner">
+            <Calendar className="w-10 h-10 text-indigo-500 dark:text-indigo-400" />
+            <div className="absolute -top-1 -right-1 w-7 h-7 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-full flex items-center justify-center shadow-md">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            </div>
+          </div>
+          
+          <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 relative z-10 tracking-tight">Your Calendar is Clear</h3>
+          <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md mx-auto mb-8 leading-relaxed relative z-10">
+            No interview timelines found matching your selection. Shortlist candidates from the pipeline to populate physical or virtual evaluation slots here.
+          </p>
+
+          <button 
+            onClick={() => setIsOptimizerOpen(true)}
+            className="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/20 transition-all hover:-translate-y-0.5 cursor-pointer relative z-10"
+          >
+            <Zap className="w-4 h-4 shrink-0" />
+            <span>Launch AI Auto-Scheduler</span>
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="recruiter-interviews-riddle">

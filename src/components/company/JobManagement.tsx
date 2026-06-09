@@ -291,17 +291,17 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
                 <div className="flex justify-between items-start gap-4">
                   <div>
                     <div className="flex items-center space-x-2">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded font-mono uppercase tracking-wider ${drive.status === "active" ? "bg-emerald-50 text-emerald-700 border border-emerald-150" : "bg-slate-100 text-slate-500 border border-slate-200 dark:border-slate-800"}`}>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded font-mono uppercase tracking-wider ${drive.status === "active" ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-150 dark:border-emerald-800" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700"}`}>
                         {drive.status === "active" ? "Active App Window" : "Campaign Closed"}
                       </span>
                       {drive.approvalStatus === 'pending' && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded font-mono uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-150 flex items-center">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded font-mono uppercase tracking-wider bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-150 dark:border-amber-800 flex items-center">
                           <ShieldQuestion className="w-3 h-3 mr-1" />
                           Pending TPO Approval
                         </span>
                       )}
                       {drive.approvalStatus === 'approved' && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded font-mono uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-150 flex items-center">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded font-mono uppercase tracking-wider bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-150 dark:border-blue-800 flex items-center">
                           <ShieldCheck className="w-3 h-3 mr-1" />
                           TPO Verified
                         </span>
@@ -316,15 +316,15 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
                     <h3 className="text-base font-extrabold text-slate-900 dark:text-white mt-2 tracking-tight">{drive.jobRole}</h3>
                     <div className="flex items-center space-x-2 mt-1">
                       <p className="text-xs text-slate-500 dark:text-slate-400 font-medium font-sans">{drive.companyName}</p>
-                      <span className="text-slate-300">•</span>
-                      <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded capitalize">{drive.type || "placement"}</span>
+                      <span className="text-slate-300 dark:text-slate-600">•</span>
+                      <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-1.5 py-0.5 rounded capitalize">{drive.type || "placement"}</span>
                     </div>
                   </div>
                   
                   {/* LPA Badge */}
-                  <div className="bg-emerald-50/50 border border-emerald-150 px-3 py-1.5 rounded-xl text-center shrink-0">
-                    <span className="text-sm font-black text-emerald-600 block">{drive.packageLPA} LPA</span>
-                    <span className="text-[9px] text-slate-500 uppercase tracking-widest font-mono font-bold block">CTC Range</span>
+                  <div className="bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-150 dark:border-emerald-800/50 px-3 py-1.5 rounded-xl text-center shrink-0">
+                    <span className="text-sm font-black text-emerald-600 dark:text-emerald-400 block">{drive.packageLPA} LPA</span>
+                    <span className="text-[9px] text-slate-500 dark:text-slate-400 uppercase tracking-widest font-mono font-bold block">CTC Range</span>
                   </div>
                 </div>
 
@@ -357,7 +357,7 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
                   <span className="text-[10px] text-slate-450 block font-mono font-bold mb-1 uppercase tracking-wider">Eligible Streams</span>
                   <div className="flex flex-wrap gap-1.5">
                     {drive.branchEligibility.map((br, idx) => (
-                      <span key={idx} className="bg-slate-100 border text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded text-[10px] font-bold">
+                      <span key={idx} className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded text-[10px] font-bold">
                         {br}
                       </span>
                     ))}
@@ -369,7 +369,7 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
                   <span className="text-[10px] text-slate-450 block font-mono font-bold mb-1 uppercase tracking-wider">Target Tech Stack</span>
                   <div className="flex flex-wrap gap-1">
                     {drive.skillsRequired.map((sk, idx) => (
-                      <span key={idx} className="bg-emerald-50/50 border border-emerald-150/40 text-emerald-700 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
+                      <span key={idx} className="bg-emerald-50/50 dark:bg-emerald-900/30 border border-emerald-150/40 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
                         {sk}
                       </span>
                     ))}
@@ -400,14 +400,14 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
                 <div className="flex items-center space-x-1.5">
                   <button
                     onClick={() => handleOpenEdit(drive)}
-                    className="p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-blue-200 rounded-xl transition cursor-pointer"
+                    className="p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-800 rounded-xl transition cursor-pointer"
                     title="Edit Drive Position Info"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteDrive(drive.id, drive.jobRole)}
-                    className="p-2 text-rose-500 hover:text-rose-600 bg-rose-50 border border-rose-100 rounded-xl transition cursor-pointer"
+                    className="p-2 text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-900/50 hover:border-rose-200 dark:hover:border-rose-800 rounded-xl transition cursor-pointer"
                     title="Delete Drive Position"
                   >
                     <Trash2 className="w-4 h-4" />
