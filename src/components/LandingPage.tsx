@@ -2109,7 +2109,7 @@ export default function LandingPage({
                           <div>
                             <p className="text-[11px] font-bold text-purple-300">TPO / Admin Login</p>
                             <p className="text-[10px] text-purple-400/80 font-semibold mt-0.5">
-                              Use <span className="font-mono text-purple-300">tpo01admin@gmail.com</span> with password <span className="font-mono text-purple-300">tpoadmin01@</span>
+                              Login with your authorized administrator account to manage campus placements.
                             </p>
                           </div>
                         </div>
