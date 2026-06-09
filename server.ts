@@ -2737,6 +2737,11 @@ app.post("/api/ai/optimize-slots", authenticateToken, async (req: any, res) => {
 
 
 // Create Placement Drive
+app.get("/api/debug/jobs", async (req: any, res) => {
+  const jobsSnap = await fdb.collection("jobs").get();
+  res.json(jobsSnap.docs.map(d => d.data()));
+});
+
 app.post("/api/drives", authenticateToken, async (req: any, res) => {
   const { role, id, name } = req.user;
   if (role !== "tpo" && role !== "company") {
@@ -3106,18 +3111,20 @@ app.post("/api/opportunities/discover", authenticateToken, async (req: any, res)
     let filteredInternal = internalJobs;
     if (query) {
       const q = query.toLowerCase();
-      filteredInternal = filteredInternal.filter(r => 
-        r.companyName.toLowerCase().includes(q) || 
+      filteredInternal = filteredInternal.filter(r => {
+        const skillsArr = Array.isArray(r.skillsRequired) ? r.skillsRequired : (typeof r.skillsRequired === 'string' ? r.skillsRequired.split(',').map(s=>s.trim()) : []);
+        return r.companyName.toLowerCase().includes(q) || 
         r.jobRole.toLowerCase().includes(q) || 
-        (r.skillsRequired && r.skillsRequired.some(s => s.toLowerCase().includes(q)))
-      );
+        skillsArr.some(s => s.toLowerCase().includes(q));
+      });
     }
     if (filters?.type) {
       filteredInternal = filteredInternal.filter(d => d.type.toLowerCase().includes(filters.type.toLowerCase()));
     }
 
     const internalMapped = filteredInternal.map(d => {
-      const dbSkills = (d.skillsRequired || []).map(s => s.toLowerCase());
+      const skillsArr = Array.isArray(d.skillsRequired) ? d.skillsRequired : (typeof d.skillsRequired === 'string' ? d.skillsRequired.split(',').map(s=>s.trim()) : []);
+      const dbSkills = skillsArr.map(s => s.toLowerCase());
       const studSkills = (profile.skills || []).map(s => s.toLowerCase());
       const matched = dbSkills.filter(s => studSkills.includes(s));
       const score = dbSkills.length > 0 ? Math.round((matched.length / dbSkills.length) * 100) : 100;
@@ -3133,6 +3140,12 @@ app.post("/api/opportunities/discover", authenticateToken, async (req: any, res)
 
     const externalMatched = getSimulatedExternalOpportunities(profile);
     const finalOpportunities = [...internalMapped, ...externalMatched].sort((a, b) => b.matchPercentage - a.matchPercentage);
+
+    console.log(`[Discover API] Found ${internalJobs.length} internal jobs. Filtered down to ${filteredInternal.length} based on query/type. Total external: ${externalMatched.length}`);
+    console.log(`[Discover API] Filter type used: ${filters?.type}, Query: ${query}`);
+    if (internalJobs.length > 0) {
+      console.log(`[Discover API] Sample internal job type: ${internalJobs[0].type}, approvalStatus: ${internalJobs[0].approvalStatus}`);
+    }
 
     res.json({ 
       success: true, 
