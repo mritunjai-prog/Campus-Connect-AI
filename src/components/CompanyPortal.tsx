@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { 
   Building2, 
   Users, 
@@ -22,12 +22,12 @@ import { motion, AnimatePresence } from "motion/react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 // Sub-components Imports
-import CompanyDashboard from "./company/CompanyDashboard";
-import JobManagement from "./company/JobManagement";
-import ApplicantTracking from "./company/ApplicantTracking";
-import InterviewScheduler from "./company/InterviewScheduler";
-import CompanyAnalytics from "./company/CompanyAnalytics";
-import AccountSecuritySettings from "./shared/AccountSecuritySettings";
+const CompanyDashboard = lazy(() => import("./company/CompanyDashboard"));
+const JobManagement = lazy(() => import("./company/JobManagement"));
+const ApplicantTracking = lazy(() => import("./company/ApplicantTracking"));
+const InterviewScheduler = lazy(() => import("./company/InterviewScheduler"));
+const CompanyAnalytics = lazy(() => import("./company/CompanyAnalytics"));
+const AccountSecuritySettings = lazy(() => import("./shared/AccountSecuritySettings"));
 
 interface CompanyPortalProps {
   token: string;
@@ -209,23 +209,25 @@ export default function CompanyPortal({ token, user, initialProfile, apiBaseUrl,
       
       {/* 1. SIDEBAR Navigation Layout */}
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-72 bg-slate-950 text-white shrink-0 border-r border-slate-900 shadow-2xl relative z-20">
-        <div className="p-8 border-b border-slate-900">
-          <div className="flex items-center space-x-3 text-white font-bold text-xl mb-6">
+      <aside className="hidden md:flex flex-col w-72 bg-white dark:bg-slate-950 text-slate-600 dark:text-white shrink-0 border-r border-slate-200 dark:border-slate-900 shadow-2xl relative z-20">
+        <div className="p-8 border-b border-slate-200 dark:border-slate-900">
+          <div className="flex items-center space-x-3 text-slate-900 dark:text-white font-bold text-xl mb-6">
             <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-600/20">
-              <Building2 className="w-6 h-6" />
+              <Building2 className="w-6 h-6 text-white" />
             </div>
             <span className="tracking-tighter">RecruiterDesk</span>
           </div>
 
-          <div className="bg-slate-900/50 rounded-2xl p-4 border border-slate-800/50 backdrop-blur-sm shadow-sm transition-all duration-300">
-            <div className="flex items-center space-x-3">
-              <div className="w-11 h-11 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/30 overflow-hidden shrink-0">
-                <Users className="w-6 h-6 text-emerald-400" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-black truncate text-white mb-0.5">{user?.name || "Recruiter"}</p>
-                <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-900/40 px-1.5 py-0.5 rounded-md inline-block">ADMIN</p>
+          <div className="px-6 py-4">
+            <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-800/50">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-200 dark:border-emerald-500/30 overflow-hidden shrink-0">
+                  <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-black truncate text-slate-900 dark:text-white mb-0.5">{user?.name || "Recruiter"}</p>
+                  <p className="text-[8px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest bg-emerald-100 dark:bg-emerald-900/40 px-1.5 py-0.5 rounded-md inline-block">ADMIN</p>
+                </div>
               </div>
             </div>
           </div>
@@ -245,14 +247,14 @@ export default function CompanyPortal({ token, user, initialProfile, apiBaseUrl,
               <button
                 key={tab.id}
                 onClick={() => setActiveSubTab(tab.id as any)}
-                className={`w-full text-left p-3.5 rounded-xl text-xs font-bold leading-relaxed flex items-center justify-between transition cursor-pointer border ${isActive ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/15 border-emerald-500" : "text-slate-400 hover:bg-slate-900 hover:text-white border-transparent hover:border-slate-800"}`}
+                className={`group w-full text-left p-3.5 rounded-xl text-xs font-bold leading-relaxed flex items-center justify-between transition cursor-pointer border ${isActive ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/15 border-emerald-500" : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white border-transparent hover:border-slate-200 dark:hover:border-slate-800"}`}
               >
                 <div className="flex items-center space-x-3">
-                  <tab.icon className={`w-4 h-4 ${isActive ? "text-white" : "text-slate-400"}`} />
+                  <tab.icon className={`w-4 h-4 ${isActive ? "text-white" : "text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white"}`} />
                   <span>{tab.label}</span>
                 </div>
                 {tab.id === "applicants" && applications.length > 0 && (
-                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold ${isActive ? "bg-emerald-700/50 text-white" : "bg-slate-800 border-slate-700 text-slate-400 border"}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold ${isActive ? "bg-emerald-700/50 text-white" : "bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400"}`}>
                     {applications.length}
                   </span>
                 )}
@@ -262,18 +264,18 @@ export default function CompanyPortal({ token, user, initialProfile, apiBaseUrl,
         </nav>
 
         {/* Sidebar bottom block */}
-        <div className="p-4 border-t border-slate-900 space-y-2 mt-auto">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-900 space-y-2 mt-auto">
           <button 
             onClick={toggleTheme}
-            className="w-full flex items-center space-x-3 p-3 rounded-xl text-slate-400 hover:bg-slate-900 transition-colors duration-200 font-bold text-sm border border-transparent hover:border-slate-800"
+            className="w-full flex items-center space-x-3 p-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors duration-200 font-bold text-sm border border-transparent hover:border-slate-200 dark:hover:border-slate-800"
           >
-            {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5" />}
+            {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-emerald-500" />}
             <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
           </button>
 
           <button 
             onClick={onLogout}
-            className="w-full bg-slate-900 hover:bg-rose-900/20 text-slate-400 hover:text-rose-400 border border-slate-800 hover:border-rose-800 rounded-xl py-3 px-3 text-xs font-bold flex items-center justify-center space-x-2 transition cursor-pointer leading-none group"
+            className="w-full bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 border border-slate-200 dark:border-slate-800 hover:border-rose-200 dark:hover:border-rose-800 rounded-xl py-3 px-3 text-xs font-bold flex items-center justify-center space-x-2 transition cursor-pointer leading-none group"
           >
             <LogOut className="w-4 h-4 shrink-0 transition-transform group-hover:-translate-x-1" />
             <span>Terminate Session</span>
@@ -290,17 +292,17 @@ export default function CompanyPortal({ token, user, initialProfile, apiBaseUrl,
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", bounce: 0.1, duration: 0.4 }}
-              className="w-64 max-w-[80vw] h-full bg-slate-950 text-white flex flex-col justify-between"
+              className="w-64 max-w-[80vw] h-full bg-white dark:bg-slate-950 text-slate-900 dark:text-white flex flex-col justify-between"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex-1">
-                <div className="p-6 border-b border-slate-900 flex justify-between items-center">
+                <div className="p-6 border-b border-slate-200 dark:border-slate-900 flex justify-between items-center">
                   <div className="flex items-center space-x-2">
-                    <Building2 className="w-5 h-5 text-emerald-400" />
-                    <span className="font-extrabold text-sm tracking-tight">Recruiter Desk</span>
+                    <Building2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="font-extrabold text-sm tracking-tight text-slate-900 dark:text-white">Recruiter Desk</span>
                   </div>
-                  <button onClick={() => setIsMobileSidebarOpen(false)} className="p-1 text-slate-400 border rounded-full">
-                    <X className="w-4 h-4" />
+                  <button onClick={() => setIsMobileSidebarOpen(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
 
@@ -402,9 +404,9 @@ export default function CompanyPortal({ token, user, initialProfile, apiBaseUrl,
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="bg-rose-50 border-b border-rose-100 text-rose-700 text-xs font-bold p-4 flex items-center space-x-2.5 shadow-sm"
+              className="bg-rose-50 dark:bg-rose-950/30 border-b border-rose-100 dark:border-rose-900/50 text-rose-700 dark:text-rose-400 text-xs font-bold p-4 flex items-center space-x-2.5 shadow-sm"
             >
-              <AlertCircle className="w-4 h-4 text-rose-550 shrink-0" />
+              <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />
               <span>{globalError}</span>
             </motion.div>
           )}
@@ -414,9 +416,9 @@ export default function CompanyPortal({ token, user, initialProfile, apiBaseUrl,
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="bg-emerald-50 border-b border-emerald-100 text-emerald-800 text-xs font-bold p-4 flex items-center space-x-2.5 shadow-sm"
+              className="bg-emerald-50 dark:bg-emerald-950/30 border-b border-emerald-100 dark:border-emerald-900/50 text-emerald-800 dark:text-emerald-400 text-xs font-bold p-4 flex items-center space-x-2.5 shadow-sm"
             >
-              <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+              <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-500 shrink-0" />
               <span>{globalSuccess}</span>
             </motion.div>
           )}
@@ -435,61 +437,63 @@ export default function CompanyPortal({ token, user, initialProfile, apiBaseUrl,
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
             >
-              {activeSubTab === "dashboard" && (
-                <CompanyDashboard 
-                  profile={profile}
-                  drives={drives}
-                  applications={applications}
-                  interviews={interviews}
-                  notifications={notifications}
-                  token={token}
-                  apiBaseUrl={apiBaseUrl}
-                  onRefresh={fetchCompanyData}
-                  onMarkNotificationsRead={handleMarkNotificationsRead}
-                />
-              )}
+              <Suspense fallback={<div className="flex justify-center py-12"><div className="w-8 h-8 rounded-full border-4 border-emerald-100 border-t-emerald-600 animate-spin"></div></div>}>
+                {activeSubTab === "dashboard" && (
+                  <CompanyDashboard 
+                    profile={profile}
+                    drives={drives}
+                    applications={applications}
+                    interviews={interviews}
+                    notifications={notifications}
+                    token={token}
+                    apiBaseUrl={apiBaseUrl}
+                    onRefresh={fetchCompanyData}
+                    onMarkNotificationsRead={handleMarkNotificationsRead}
+                  />
+                )}
 
-              {activeSubTab === "drives" && (
-                <JobManagement 
-                  drives={drives}
-                  token={token}
-                  apiBaseUrl={apiBaseUrl}
-                  onRefresh={fetchCompanyData}
-                />
-              )}
+                {activeSubTab === "drives" && (
+                  <JobManagement 
+                    drives={drives}
+                    token={token}
+                    apiBaseUrl={apiBaseUrl}
+                    onRefresh={fetchCompanyData}
+                  />
+                )}
 
-              {activeSubTab === "applicants" && (
-                <ApplicantTracking 
-                  drives={drives}
-                  applications={applications}
-                  token={token}
-                  apiBaseUrl={apiBaseUrl}
-                  onRefresh={fetchCompanyData}
-                  onScheduleInterview={handleOpenScheduleModal}
-                />
-              )}
+                {activeSubTab === "applicants" && (
+                  <ApplicantTracking 
+                    drives={drives}
+                    applications={applications}
+                    token={token}
+                    apiBaseUrl={apiBaseUrl}
+                    onRefresh={fetchCompanyData}
+                    onScheduleInterview={handleOpenScheduleModal}
+                  />
+                )}
 
-              {activeSubTab === "interviews" && (
-                <InterviewScheduler 
-                  interviews={interviews}
-                  token={token}
-                  apiBaseUrl={apiBaseUrl}
-                  onRefresh={fetchCompanyData}
-                />
-              )}
+                {activeSubTab === "interviews" && (
+                  <InterviewScheduler 
+                    interviews={interviews}
+                    token={token}
+                    apiBaseUrl={apiBaseUrl}
+                    onRefresh={fetchCompanyData}
+                  />
+                )}
 
-              {activeSubTab === "analytics" && (
-                <CompanyAnalytics 
-                  drives={drives}
-                  applications={applications}
-                />
-              )}
+                {activeSubTab === "analytics" && (
+                  <CompanyAnalytics 
+                    drives={drives}
+                    applications={applications}
+                  />
+                )}
 
-              {activeSubTab === "settings" && (
-                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[2.5rem] p-6 md:p-10 shadow-sm transition-colors text-left max-w-4xl mx-auto">
-                  <AccountSecuritySettings theme={theme} userRole="company" userEmail={user?.email} />
-                </div>
-              )}
+                {activeSubTab === "settings" && (
+                  <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[2.5rem] p-6 md:p-10 shadow-sm transition-colors text-left max-w-4xl mx-auto">
+                    <AccountSecuritySettings theme={theme} userRole="company" userEmail={user?.email} />
+                  </div>
+                )}
+              </Suspense>
             </motion.div>
           )}
         </div>

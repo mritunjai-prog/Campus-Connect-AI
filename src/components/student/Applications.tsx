@@ -108,7 +108,7 @@ export const Applications: React.FC<ApplicationsProps> = ({ applications, onTrac
                             <config.icon className="w-3 h-3" />
                             <span>{app.status === "rejected" ? "Technical Reject" : config.label}</span>
                         </div>
-                        <p className="text-[10px] text-slate-400 font-bold mt-2 uppercase tracking-widest whitespace-nowrap">Updated {new Date(app.appliedAt).toLocaleDateString()}</p>
+                        <p className="text-[10px] text-slate-400 font-bold mt-2 uppercase tracking-widest whitespace-nowrap">Updated {new Date(app.appliedDate).toLocaleDateString()}</p>
                      </div>
                      <button 
                         onClick={() => onTrack(app.id)}

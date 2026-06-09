@@ -780,6 +780,30 @@ export const ResumeCenter: React.FC<ResumeCenterProps> = ({
                   </motion.div>
                 </AnimatePresence>
               </div>
+            </div>
+          ) : (
+            /* Standby view */
+            <div className="h-full min-h-[480px] flex flex-col items-center justify-center bg-white dark:bg-slate-800/80 border-2 border-dashed border-slate-200 dark:border-slate-700/60 rounded-[3.5rem] p-16 text-center space-y-6 shadow-xs">
+              <div className="w-24 h-24 bg-indigo-50 dark:bg-indigo-900/10 rounded-full flex items-center justify-center animate-pulse border border-indigo-100 dark:border-indigo-500/10">
+                <FileText className="w-12 h-12 text-indigo-500" />
+              </div>
+              <div className="max-w-md">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Intelligence Engine Standby</h3>
+                <p className="text-slate-500 dark:text-slate-400 mt-2 text-sm leading-relaxed font-semibold">
+                  Ingest your active resume file or manually input raw resume text content above to activate the resume completeness analyzer and job fit indexer.
+                </p>
+              </div>
+              <div className="flex items-center space-x-3 bg-slate-50 dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200">
+                <div className="w-3.5 h-3.5 bg-green-500 rounded-full animate-ping shrink-0" />
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Cognitive pipeline primed</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+      </div>
+      {analysis && (
+        <>
               {/* Grid block for side-by-side: AI Generated Better Resume Content on the left, Resume Improvements on the right */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start w-full">
                 
@@ -955,28 +979,8 @@ export const ResumeCenter: React.FC<ResumeCenterProps> = ({
                 </div>
 
               </div>
-            </div>
-          ) : (
-            /* Standby view */
-            <div className="h-full min-h-[480px] flex flex-col items-center justify-center bg-white dark:bg-slate-800/80 border-2 border-dashed border-slate-200 dark:border-slate-700/60 rounded-[3.5rem] p-16 text-center space-y-6 shadow-xs">
-              <div className="w-24 h-24 bg-indigo-50 dark:bg-indigo-900/10 rounded-full flex items-center justify-center animate-pulse border border-indigo-100 dark:border-indigo-500/10">
-                <FileText className="w-12 h-12 text-indigo-500" />
-              </div>
-              <div className="max-w-md">
-                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Intelligence Engine Standby</h3>
-                <p className="text-slate-500 dark:text-slate-400 mt-2 text-sm leading-relaxed font-semibold">
-                  Ingest your active resume file or manually input raw resume text content above to activate the resume completeness analyzer and job fit indexer.
-                </p>
-              </div>
-              <div className="flex items-center space-x-3 bg-slate-50 dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200">
-                <div className="w-3.5 h-3.5 bg-green-500 rounded-full animate-ping shrink-0" />
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Cognitive pipeline primed</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-      </div>
+        </>
+      )}
     </div>
   );
 };

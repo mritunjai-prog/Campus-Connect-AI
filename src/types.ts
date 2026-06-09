@@ -92,7 +92,9 @@ export interface StudentProfile {
   };
   
   profileCompleteness: number; // 0-100
-  verificationStatus: 'draft' | 'completed' | 'pending' | 'verified';
+  verificationStatus: 'draft' | 'completed' | 'pending' | 'verified' | 'rejected';
+  feedback?: string;
+  updatedAt?: string;
 }
 
 export interface TPOProfile {

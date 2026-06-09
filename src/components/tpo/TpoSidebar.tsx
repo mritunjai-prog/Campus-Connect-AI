@@ -96,29 +96,29 @@ export default function TpoSidebar({
   ];
 
   return (
-    <aside className="w-full md:w-72 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 shadow-2xl z-20 h-full md:sticky md:top-0 md:h-screen" id="tpo-sidebar-navigation">
+    <aside className="w-full md:w-72 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 flex flex-col shrink-0 border-r border-slate-200 dark:border-slate-800 shadow-2xl z-20 h-full md:sticky md:top-0 md:h-screen" id="tpo-sidebar-navigation">
       {/* Brand Header */}
-      <div className="p-6 border-b border-slate-800">
+      <div className="p-6 border-b border-slate-200 dark:border-slate-800">
         <div 
-          className="flex items-center space-x-3 text-white font-bold text-xl mb-4 cursor-pointer hover:opacity-80 transition-opacity"
+          className="flex items-center space-x-3 text-slate-900 dark:text-white font-bold text-xl mb-4 cursor-pointer hover:opacity-80 transition-opacity"
           onClick={() => setActiveTab("overview")}
         >
           <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/30">
-            <Sparkles className="w-5 h-5" />
+            <Sparkles className="w-5 h-5 text-white" />
           </div>
           <span className="tracking-tighter">PlacementCell</span>
         </div>
 
         {/* User Badge */}
-        <div className="bg-slate-800/40 rounded-xl p-3 border border-slate-700/40 backdrop-blur-sm">
+        <div className="bg-slate-50 dark:bg-slate-800/40 rounded-xl p-3 border border-slate-200 dark:border-slate-700/40 backdrop-blur-sm">
           <div className="flex items-center space-x-2.5">
-            <div className="w-9 h-9 rounded-full bg-indigo-505 bg-indigo-900 border border-indigo-700 flex items-center justify-center font-bold text-white text-sm shrink-0">
+            <div className="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900 border border-indigo-200 dark:border-indigo-700 flex items-center justify-center font-bold text-indigo-700 dark:text-white text-sm shrink-0">
               {user?.name?.substring(0, 2).toUpperCase() || "PO"}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-white truncate mb-0.5">{user?.name || "Placement Officer"}</p>
-              <span className="text-[9px] font-extrabold text-indigo-400 uppercase tracking-wider bg-indigo-950/80 px-1.5 py-0.5 rounded border border-indigo-900/60 inline-block block w-fit">
-                CAMPUS DIRECTOR
+              <p className="text-xs font-bold text-slate-900 dark:text-white truncate mb-0.5">{user?.name || "Placement Officer"}</p>
+              <span className="text-[9px] font-extrabold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider bg-indigo-100 dark:bg-indigo-950/80 px-1.5 py-0.5 rounded border border-indigo-200 dark:border-indigo-900/60 inline-block block w-fit">
+                PLACEMENT DIRECTOR
               </span>
             </div>
           </div>
@@ -139,15 +139,15 @@ export default function TpoSidebar({
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`w-full text-left p-2.5 rounded-lg text-xs font-semibold tracking-tight transition-all duration-150 flex items-center justify-between border ${
+                  className={`group w-full text-left p-2.5 rounded-lg text-xs font-semibold tracking-tight transition-all duration-150 flex items-center justify-between border ${
                     isActive 
-                      ? "bg-indigo-600 text-white shadow-md border-indigo-550" 
-                      : "text-slate-400 hover:bg-slate-800/80 hover:text-white border-transparent"
+                      ? "bg-indigo-600 text-white shadow-md border-indigo-500" 
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white border-transparent"
                   }`}
                   id={`sidebar-tab-${item.id}`}
                 >
                   <div className="flex items-center space-x-2.5 min-w-0">
-                    <IconComp className={`w-4 h-4 shrink-0 ${isActive ? "text-white" : "text-slate-400 group-hover:text-white"}`} />
+                    <IconComp className={`w-4 h-4 shrink-0 ${isActive ? "text-white" : "text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white"}`} />
                     <span className="truncate">{item.label}</span>
                   </div>
                   {item.id === "recruiters" && companies && companies.filter(c => c.status === "pending_verification" || (!c.isVerified && !c.isApproved)).length > 0 && (
@@ -163,19 +163,19 @@ export default function TpoSidebar({
       </nav>
 
       {/* Sidebar Footer */}
-      <div className="p-4 border-t border-slate-800 space-y-2 mt-auto bg-slate-900/80">
+      <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2 mt-auto bg-white/80 dark:bg-slate-900/80">
         <button 
           onClick={toggleTheme}
-          className="w-full flex items-center space-x-2.5 p-2.5 rounded-lg text-slate-400 hover:bg-slate-800 transition-colors duration-200 font-semibold text-xs border border-transparent hover:border-slate-700"
+          className="w-full flex items-center space-x-2.5 p-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 font-semibold text-xs border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
           id="theme-toggle-sidebar"
         >
-          {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}
+          {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-indigo-500" />}
           <span>{theme === 'dark' ? 'Light Appearance' : 'Dark Appearance'}</span>
         </button>
 
         <button 
           onClick={onLogout}
-          className="w-full flex items-center space-x-2.5 p-2.5 rounded-lg text-slate-400 font-semibold text-xs hover:bg-rose-950/30 hover:text-rose-450 transition-colors duration-200 border border-transparent hover:border-rose-900/40 group"
+          className="w-full flex items-center space-x-2.5 p-2.5 rounded-lg text-slate-500 dark:text-slate-400 font-semibold text-xs hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-400 transition-colors duration-200 border border-transparent hover:border-rose-200 dark:hover:border-rose-900/40 group"
           id="logout-button-sidebar"
         >
           <LogOut className="w-4 h-4 text-rose-500 transition-transform group-hover:-translate-x-0.5" />

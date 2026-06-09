@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { Sidebar } from "./student/Sidebar";
-import { Dashboard } from "./student/Dashboard";
-import { Profile as ProfileView } from "./student/Profile";
-import { CareerDiscoveryHub as DiscoveryHubView } from "./student/CareerDiscoveryHub";
-import { ResumeCenter as ResumeCenterView } from "./student/ResumeCenter";
-import { MockInterview as MockInterviewView } from "./student/MockInterview";
-import { Applications as ApplicationsView } from "./student/Applications";
-import { StudentChatbot } from "./student/StudentChatbot";
-import AccountSecuritySettings from "./shared/AccountSecuritySettings";
+const Dashboard = lazy(() => import("./student/Dashboard").then(m => ({ default: m.Dashboard })));
+const ProfileView = lazy(() => import("./student/Profile").then(m => ({ default: m.Profile })));
+const DiscoveryHubView = lazy(() => import("./student/CareerDiscoveryHub").then(m => ({ default: m.CareerDiscoveryHub })));
+const ResumeCenterView = lazy(() => import("./student/ResumeCenter").then(m => ({ default: m.ResumeCenter })));
+const MockInterviewView = lazy(() => import("./student/MockInterview").then(m => ({ default: m.MockInterview })));
+const ApplicationsView = lazy(() => import("./student/Applications").then(m => ({ default: m.Applications })));
+const StudentChatbot = lazy(() => import("./student/StudentChatbot").then(m => ({ default: m.StudentChatbot })));
+const AccountSecuritySettings = lazy(() => import("./shared/AccountSecuritySettings"));
 import { useNavigate, useLocation } from "react-router-dom";
 
 import { 
@@ -17,7 +17,8 @@ import {
   CheckCircle,
   X,
   Menu,
-  Sparkles
+  Sparkles,
+  Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { StudentProfile, PlacementDrive, Application, Interview, Notification, Theme } from "../types";
@@ -405,7 +406,7 @@ export default function StudentPortal({ token, user, initialProfile, apiBaseUrl,
     switch (activeTab) {
       case "dashboard": return <Dashboard profile={profile} applications={applications} interviews={interviews} recommendations={recommendations} onApply={handleApply} setActiveTab={handleTabChange} onSubmitVerification={handleSubmitVerification} />;
       case "profile": return <ProfileView profile={profile} onUpdate={handleProfileUpdate} loading={loading} onUploadResume={handleResumeUpload} onUploadPhoto={handlePhotoUpload} onSubmitVerification={handleSubmitVerification} apiBaseUrl={apiBaseUrl} />;
-      case "opportunities": return <DiscoveryHubView drives={drives} onApply={handleApply} studentProfile={profile} />;
+      case "opportunities": return <DiscoveryHubView onApply={handleApply} studentProfile={profile} />;
       case "resume": return <ResumeCenterView profile={profile} onUpload={handleResumeUpload} onAnalyze={handleResumeAnalyze} loading={loading} isAnalyzing={isAnalyzing} uploadProgress={uploadProgress} apiBaseUrl={apiBaseUrl} token={token} />;
       case "applications": return <ApplicationsView applications={applications} onTrack={() => {}} />;
       case "interview": return <MockInterviewView onStart={handleStartInterview} onSubmitAnswer={handleSubmitInterviewAnswer} isGenerating={isGeneratingInterview} isEvaluating={isEvaluatingInterview} phase={interviewPhase} questions={interviewQuestions} currentIndex={currentQuestionIndex} evaluation={interviewEvaluation} />;
@@ -494,7 +495,9 @@ export default function StudentPortal({ token, user, initialProfile, apiBaseUrl,
                exit={{ opacity: 0, y: -10 }}
                transition={{ duration: 0.2 }}
              >
-               {renderView()}
+               <Suspense fallback={<div className="flex justify-center p-12"><Loader2 className="w-8 h-8 text-indigo-500 animate-spin" /></div>}>
+                 {renderView()}
+               </Suspense>
              </motion.div>
            </AnimatePresence>
           </div>
@@ -571,7 +574,9 @@ export default function StudentPortal({ token, user, initialProfile, apiBaseUrl,
       </AnimatePresence>
 
       {/* Floating Global Assistant */}
-      <StudentChatbot token={token} apiBaseUrl={apiBaseUrl} />
+      <Suspense fallback={null}>
+        <StudentChatbot token={token} apiBaseUrl={apiBaseUrl} />
+      </Suspense>
     </div>
   );
 }

@@ -406,11 +406,11 @@ export default function StudentRegistryTab({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 block uppercase">LinkedIn Profile</span>
-                  <span className="text-slate-600 dark:text-slate-300 text-xs block truncate italic">{selectedStudent.linkedInUrl || "No LinkedIn Profile Linked"}</span>
+                  <span className="text-slate-600 dark:text-slate-300 text-xs block truncate italic">{selectedStudent.linkedinUrl || "No LinkedIn Profile Linked"}</span>
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 block uppercase">Personal Portfolio</span>
-                  <span className="text-slate-600 dark:text-slate-300 text-xs block truncate italic">{selectedStudent.gitHubUrl || "No GitHub Portfolio Linked"}</span>
+                  <span className="text-slate-600 dark:text-slate-300 text-xs block truncate italic">{selectedStudent.githubUrl || "No GitHub Portfolio Linked"}</span>
                 </div>
               </div>
 

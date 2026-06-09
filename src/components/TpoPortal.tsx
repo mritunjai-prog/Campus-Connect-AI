@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { Theme, PlacementDrive, StudentProfile, Application, AuditLog, DashboardStatsTPO } from "../types";
 import TpoSidebar, { TpoSubTab } from "./tpo/TpoSidebar";
-import DashboardOverview from "./tpo/DashboardOverview";
-import StudentRegistryTab from "./tpo/StudentRegistryTab";
-import RecruiterAndJobDesk from "./tpo/RecruiterAndJobDesk";
-import ApplicationsAndAnalyticsDesk from "./tpo/ApplicationsAndAnalyticsDesk";
-import UtilitiesAndSettingsDesk from "./tpo/UtilitiesAndSettingsDesk";
-import PredictiveAnalytics from "./tpo/PredictiveAnalytics";
-import StudentResumeGallery from "./tpo/StudentResumeGallery";
+const DashboardOverview = lazy(() => import("./tpo/DashboardOverview"));
+const StudentRegistryTab = lazy(() => import("./tpo/StudentRegistryTab"));
+const RecruiterAndJobDesk = lazy(() => import("./tpo/RecruiterAndJobDesk"));
+const ApplicationsAndAnalyticsDesk = lazy(() => import("./tpo/ApplicationsAndAnalyticsDesk"));
+const UtilitiesAndSettingsDesk = lazy(() => import("./tpo/UtilitiesAndSettingsDesk"));
+const PredictiveAnalytics = lazy(() => import("./tpo/PredictiveAnalytics"));
 import { AlertCircle, CheckSquare, RefreshCw, Menu, Sparkles } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -319,16 +318,16 @@ export default function TpoPortal({
       <main className="flex-1 flex flex-col min-w-0 md:p-8 overflow-y-auto max-h-screen space-y-6" id="tpo-main-workspace-scrollbar">
         
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-900 z-30 transition-colors">
-          <div className="flex items-center space-x-3 text-white font-bold text-lg">
+        <header className="md:hidden flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 z-30 transition-colors">
+          <div className="flex items-center space-x-3 text-slate-900 dark:text-white font-bold text-lg">
             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-600/30">
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-4 h-4 text-white" />
             </div>
             <span className="tracking-tight">PlacementCell</span>
           </div>
           <button 
             onClick={() => setIsSidebarOpen(true)}
-            className="p-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-colors"
+            className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
           >
             <Menu className="w-6 h-6" />
           </button>
@@ -349,7 +348,7 @@ export default function TpoPortal({
 
           <button 
             onClick={fetchTpoData}
-            className="flex items-center space-x-1 p-2 rounded-xl text-slate-400 hover:text-white bg-slate-100 dark:bg-slate-950/20 hover:bg-slate-800 text-xs border border-slate-205 dark:border-slate-800 transition"
+            className="flex items-center space-x-1 p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-950/20 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs border border-slate-200 dark:border-slate-800 transition"
             title="Reload real-time registers"
           >
             <RefreshCw className="w-3.5 h-3.5 shrink-0" />
@@ -374,97 +373,99 @@ export default function TpoPortal({
 
         {/* RENDER VIEWPORTS BASED ON ACTIVE TAB STATE */}
         <div className="flex-1">
-          {activeTab === "overview" && (
-            <DashboardOverview 
-              stats={stats}
-              students={students}
-              companies={companies}
-              drives={drives}
-              applications={applications}
-              recentActivities={auditLogs}
-              onReviewStudent={(student) => {
-                setActiveTab("student_verification");
-              }}
-              onVerifyRecruiter={handleVerifyRecruiter}
-              onApproveOpportunity={handleApproveOpportunity}
-              onNavigateToTab={handleNavigationTransition}
-              sendNotificationReminder={handleSendProfileReminder}
-            />
-          )}
+          <Suspense fallback={<div className="flex justify-center py-12"><div className="w-8 h-8 rounded-full border-4 border-indigo-100 border-t-indigo-600 animate-spin"></div></div>}>
+            {activeTab === "overview" && (
+              <DashboardOverview 
+                stats={stats}
+                students={students}
+                companies={companies}
+                drives={drives}
+                applications={applications}
+                recentActivities={auditLogs}
+                onReviewStudent={(student) => {
+                  setActiveTab("student_verification");
+                }}
+                onVerifyRecruiter={handleVerifyRecruiter}
+                onApproveOpportunity={handleApproveOpportunity}
+                onNavigateToTab={handleNavigationTransition}
+                sendNotificationReminder={handleSendProfileReminder}
+              />
+            )}
 
-          {activeTab === "students" && (
-            <StudentRegistryTab 
-              students={students}
-              onVerifyStudent={handleVerifyStudent}
-              sendNotificationReminder={handleSendProfileReminder}
-              initialFilter="all"
-            />
-          )}
+            {activeTab === "students" && (
+              <StudentRegistryTab 
+                students={students}
+                onVerifyStudent={handleVerifyStudent}
+                sendNotificationReminder={handleSendProfileReminder}
+                initialFilter="all"
+              />
+            )}
 
-          {activeTab === "student_verification" && (
-            <StudentRegistryTab 
-              students={students}
-              onVerifyStudent={handleVerifyStudent}
-              sendNotificationReminder={handleSendProfileReminder}
-              initialFilter="pending"
-            />
-          )}
+            {activeTab === "student_verification" && (
+              <StudentRegistryTab 
+                students={students}
+                onVerifyStudent={handleVerifyStudent}
+                sendNotificationReminder={handleSendProfileReminder}
+                initialFilter="pending"
+              />
+            )}
 
-          {activeTab === "recruiters" && (
-            <RecruiterAndJobDesk 
-              companies={companies}
-              drives={drives}
-              onVerifyRecruiter={handleVerifyRecruiter}
-              onApproveOpportunity={handleApproveOpportunity}
-              onCreateDrive={handleCreateDirectDrive}
-              activeView="recruiters"
-            />
-          )}
+            {activeTab === "recruiters" && (
+              <RecruiterAndJobDesk 
+                companies={companies}
+                drives={drives}
+                onVerifyRecruiter={handleVerifyRecruiter}
+                onApproveOpportunity={handleApproveOpportunity}
+                onCreateDrive={handleCreateDirectDrive}
+                activeView="recruiters"
+              />
+            )}
 
-          {activeTab === "jobs_approvals" && (
-            <RecruiterAndJobDesk 
-              companies={companies}
-              drives={drives}
-              onVerifyRecruiter={handleVerifyRecruiter}
-              onApproveOpportunity={handleApproveOpportunity}
-              onCreateDrive={handleCreateDirectDrive}
-              activeView="jobs_approvals"
-            />
-          )}
+            {activeTab === "jobs_approvals" && (
+              <RecruiterAndJobDesk 
+                companies={companies}
+                drives={drives}
+                onVerifyRecruiter={handleVerifyRecruiter}
+                onApproveOpportunity={handleApproveOpportunity}
+                onCreateDrive={handleCreateDirectDrive}
+                activeView="jobs_approvals"
+              />
+            )}
 
-          {activeTab === "applications_tracker" && (
-            <ApplicationsAndAnalyticsDesk 
-              applications={applications}
-              students={students}
-              onUpdateAppStatus={handleUpdateApplicantStatus}
-              activeView="applications_tracker"
-            />
-          )}
+            {activeTab === "applications_tracker" && (
+              <ApplicationsAndAnalyticsDesk 
+                applications={applications}
+                students={students}
+                onUpdateAppStatus={handleUpdateApplicantStatus}
+                activeView="applications_tracker"
+              />
+            )}
 
-          {activeTab === "placement_analytics" && (
-            <ApplicationsAndAnalyticsDesk 
-              applications={applications}
-              students={students}
-              onUpdateAppStatus={handleUpdateApplicantStatus}
-              activeView="placement_analytics"
-            />
-          )}
+            {activeTab === "placement_analytics" && (
+              <ApplicationsAndAnalyticsDesk 
+                applications={applications}
+                students={students}
+                onUpdateAppStatus={handleUpdateApplicantStatus}
+                activeView="placement_analytics"
+              />
+            )}
 
-          {activeTab === "predictive_analytics" && (
-            <PredictiveAnalytics token={token} apiBaseUrl={apiBaseUrl} />
-          )}
+            {activeTab === "predictive_analytics" && (
+              <PredictiveAnalytics token={token} apiBaseUrl={apiBaseUrl} />
+            )}
 
-          {(activeTab === "notifications_center" || activeTab === "drive_management" || activeTab === "reports_exports" || activeTab === "settings") && (
-            <UtilitiesAndSettingsDesk 
-              students={students}
-              drives={drives}
-              companies={companies}
-              onBroadcastNotification={handleBroadcastNotification}
-              activeView={activeTab as any}
-              theme={theme}
-              userEmail={user?.email}
-            />
-          )}
+            {(activeTab === "notifications_center" || activeTab === "drive_management" || activeTab === "reports_exports" || activeTab === "settings") && (
+              <UtilitiesAndSettingsDesk 
+                students={students}
+                drives={drives}
+                companies={companies}
+                onBroadcastNotification={handleBroadcastNotification}
+                activeView={activeTab as any}
+                theme={theme}
+                userEmail={user?.email}
+              />
+            )}
+          </Suspense>
         </div>
       </div>
     </main>

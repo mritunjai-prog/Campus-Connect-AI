@@ -171,22 +171,22 @@ export default function ApplicantTracking({
     <div className="space-y-6" id="comp-applicant-subtab">
       
       {/* Position selector top control bar */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h2 className="text-lg font-bold text-slate-900">Qualified Candidate Pipeline</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Qualified Candidate Pipeline</h2>
           <p className="text-xs text-slate-500">Screen, interview, and evaluate student submissions</p>
         </div>
         
         {/* Dropdown position selector */}
         <div className="flex flex-wrap items-center gap-3">
-          <span className="text-xs font-semibold text-slate-600 shrink-0">Selected Position:</span>
+          <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 shrink-0">Selected Position:</span>
           <select
             value={selectedDriveId}
             onChange={(e) => {
               setSelectedDriveId(e.target.value);
               setCopilotError("");
             }}
-            className="p-2 border border-slate-200 bg-slate-50 rounded-xl text-xs font-bold outline-none cursor-pointer"
+            className="p-2 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs font-bold outline-none cursor-pointer"
           >
             <option value="all">All Placement Openings ({drives.length})</option>
             {drives.map(d => (
@@ -235,27 +235,27 @@ export default function ApplicantTracking({
       )}
 
       {/* Recruiter standard sliding filters and filters deck */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-6" id="applicants-deck-filters">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-6" id="applicants-deck-filters">
         <div className="col-span-1 sm:col-span-2">
-          <label className="block text-xs font-bold text-slate-600 mb-1">Search Candidates (Name or Major)</label>
+          <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Search Candidates (Name or Major)</label>
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+            <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3 top-3" />
             <input 
               type="text" 
               placeholder="e.g. John Doe"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-3 text-xs outline-none focus:bg-white"
+              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl py-2 pl-9 pr-3 text-xs outline-none focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-600 mb-1">Branch filter</label>
+          <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Branch filter</label>
           <select
             value={filterBranch}
             onChange={(e) => setFilterBranch(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:bg-white"
+            className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900"
           >
             <option value="all">All Disciplines</option>
             {uniqueBranches.map((br, idx) => (
@@ -265,7 +265,7 @@ export default function ApplicantTracking({
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-600 mb-1">Cgpa Cutoff Check: {minCgpa}+</label>
+          <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Cgpa Cutoff Check: {minCgpa}+</label>
           <input 
             type="range"
             min="0"
@@ -280,7 +280,7 @@ export default function ApplicantTracking({
 
       {/* Candidates List Lattice Grid */}
       {filteredApplicants.length === 0 ? (
-        <div className="py-16 bg-white border border-slate-200 rounded-2xl text-center text-slate-400 text-xs">
+        <div className="py-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-center text-slate-500 dark:text-slate-400 text-xs">
           No applicants match filters.
         </div>
       ) : (
@@ -293,7 +293,7 @@ export default function ApplicantTracking({
             return (
               <div 
                 key={app.id} 
-                className="bg-white border border-slate-200 rounded-2xl p-5 md:p-6 shadow-md hover:shadow-lg transition flex flex-col lg:flex-row justify-between gap-6"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 md:p-6 shadow-md hover:shadow-lg transition flex flex-col lg:flex-row justify-between gap-6"
               >
                 
                 {/* Candidate basic profile dossier details (left 50% width) */}
@@ -307,14 +307,14 @@ export default function ApplicantTracking({
                       )}
                     </div>
                     <div>
-                      <h3 className="text-base font-black text-slate-900 tracking-tight leading-none">{app.studentName}</h3>
-                      <span className="text-[10px] text-slate-400 block font-mono font-bold mt-1.5 uppercase">Applied for: {app.jobRole}</span>
+                      <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight leading-none">{app.studentName}</h3>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-mono font-bold mt-1.5 uppercase">Applied for: {app.jobRole}</span>
                       <p className="text-xs text-slate-500 font-sans mt-0.5">{app.studentBranch} Major • CGPA: <b>{app.studentCgpa}</b> • Backlogs: <b>{app.studentBacklogs}</b></p>
                     </div>
                   </div>
 
                   {app.eligibilityExplanation && (
-                    <div className="bg-slate-50/50 p-3 rounded-xl text-[11px] text-slate-500 leading-relaxed border border-slate-200/50">
+                    <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed border border-slate-200 dark:border-slate-800/50">
                       💡 <b>Academic Cutoff Status:</b> {app.eligibilityExplanation}
                     </div>
                   )}
@@ -327,13 +327,13 @@ export default function ApplicantTracking({
                         target="_blank" 
                         rel="noreferrer" 
                         referrerPolicy="no-referrer"
-                        className="inline-flex items-center space-x-1 px-3 py-1.5 bg-slate-100 border border-slate-200/80 rounded-xl hover:bg-slate-200 text-slate-600 hover:text-slate-900 font-bold text-[10px] transition cursor-pointer"
+                        className="inline-flex items-center space-x-1 px-3 py-1.5 bg-slate-100 border border-slate-200 dark:border-slate-800/80 rounded-xl hover:bg-slate-200 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:text-white font-bold text-[10px] transition cursor-pointer"
                       >
                         <FileText className="w-3.5 h-3.5 text-slate-500" />
                         <span>Inspect Student Resume PDF</span>
                       </a>
                     ) : (
-                      <span className="text-[10px] text-slate-400 font-medium italic">No physical resume PDF uploaded</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium italic">No physical resume PDF uploaded</span>
                     )}
                     {app.resumeScore > 0 && (
                       <span className="bg-emerald-50 text-emerald-800 border border-emerald-100 text-[10px] font-mono px-2.5 py-1 rounded-xl font-bold">
@@ -368,7 +368,7 @@ export default function ApplicantTracking({
                           <span className="text-[8px] font-bold uppercase leading-none opacity-80">Score</span>
                         </div>
                         <div>
-                          <p className="text-[11px] font-medium text-slate-700">{hasAiAssessment.summary}</p>
+                          <p className="text-[11px] font-medium text-slate-700 dark:text-slate-200">{hasAiAssessment.summary}</p>
                           <span className="text-[9px] font-mono text-emerald-600 block mt-1">Skill Match Score: <b>{hasAiAssessment.skillMatchPercentage}%</b></span>
                         </div>
                       </div>
@@ -377,19 +377,19 @@ export default function ApplicantTracking({
                     <div className="pt-2">
                       <button
                         onClick={() => setShowQuestionsForAppId(isSelectedForQuestions ? null : app.id)}
-                        className="w-full inline-flex items-center justify-between text-[11px] bg-white hover:bg-emerald-50 font-bold border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-700 rounded-xl py-2 px-3 transition cursor-pointer"
+                        className="w-full inline-flex items-center justify-between text-[11px] bg-white dark:bg-slate-900 hover:bg-emerald-50 font-bold border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-700 rounded-xl py-2 px-3 transition cursor-pointer"
                       >
                         <span>View Custom Interview Suggestions</span>
                         <ChevronDown className={`w-3.5 h-3.5 text-emerald-400 transition-transform duration-200 ${isSelectedForQuestions ? "rotate-180" : ""}`} />
                       </button>
 
                       {isSelectedForQuestions && (
-                        <div className="mt-2.5 bg-white border border-emerald-100 p-3 rounded-xl text-xs space-y-2 text-slate-650 shadow-sm animate-fade-in">
-                          <span className="text-[10px] text-slate-400 uppercase font-bold block mb-1">Tailored Technical Questions Suggestions:</span>
+                        <div className="mt-2.5 bg-white dark:bg-slate-900 border border-emerald-100 p-3 rounded-xl text-xs space-y-2 text-slate-650 shadow-sm animate-fade-in">
+                          <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold block mb-1">Tailored Technical Questions Suggestions:</span>
                           {hasAiAssessment.suggestedQuestions.map((q, idx) => (
                             <div key={idx} className="flex gap-1.5 leading-relaxed">
                               <span className="font-mono text-emerald-600 shrink-0 font-bold">{idx + 1}.</span>
-                              <p className="font-medium text-slate-700">{q}</p>
+                              <p className="font-medium text-slate-700 dark:text-slate-200">{q}</p>
                             </div>
                           ))}
                         </div>
@@ -401,20 +401,20 @@ export default function ApplicantTracking({
                 {/* Candidate Selection Manual Decision panel (right side) */}
                 <div className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l border-slate-100 pt-4 lg:pt-0 lg:pl-5 flex flex-col justify-between space-y-3 shrink-0">
                   <div className="space-y-1">
-                    <span className="text-[10px] text-slate-400 block font-mono font-bold uppercase">Candidate screening state</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-mono font-bold uppercase">Candidate screening state</span>
                     <span className={`text-[11px] font-black uppercase text-center border px-2.5 py-1 rounded inline-block ${app.status === "selected" ? "bg-emerald-50 border-emerald-200 text-emerald-800" : (app.status === "rejected" ? "bg-rose-50 border-rose-250 text-rose-800" : (app.status === "applied" ? "bg-blue-50 border-blue-200 text-blue-800" : "bg-indigo-50 border-indigo-200 text-indigo-800"))}`}>
                       {app.status.replace("_", " ")}
                     </span>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-bold text-slate-600 mb-1">Recruiter HR Feedback Note</label>
+                    <label className="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-1">Recruiter HR Feedback Note</label>
                     <input 
                       type="text" 
                       placeholder="Add HR feedback and select decision..."
                       value={feedbacks[app.id] || ""}
                       onChange={(e) => handleFeedbackChange(app.id, e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:bg-white focus:border-emerald-500"
+                      className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900 focus:border-emerald-500"
                     />
                   </div>
 
@@ -427,7 +427,7 @@ export default function ApplicantTracking({
                     <div className="grid grid-cols-2 gap-1.5 text-xs select-none">
                       <button 
                         onClick={() => handleModifyStatus(app.id, "shortlisted")}
-                        className="bg-slate-50 hover:bg-slate-100 border text-slate-700 py-2 rounded-xl text-[11px] font-semibold transition"
+                        className="bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 border text-slate-700 dark:text-slate-200 py-2 rounded-xl text-[11px] font-semibold transition"
                       >
                         Shortlist
                       </button>

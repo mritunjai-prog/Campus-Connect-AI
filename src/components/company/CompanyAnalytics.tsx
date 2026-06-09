@@ -104,10 +104,10 @@ export default function CompanyAnalytics({ drives, applications }: CompanyAnalyt
           { title: "Qualified CGPA Averages", value: applications.length > 0 ? (applications.reduce((sum, a) => sum + (a.studentCgpa || 0), 0) / applications.length).toFixed(2) : "0.00", label: "Average GPA of applicants", icon: GraduationCap, color: "text-blue-500 bg-blue-50" },
           { title: "Avg Application ATS Match", value: `${applications.length > 0 ? Math.round(applications.reduce((sum, a) => sum + (a.resumeScore || 0), 0)/applications.length) : 0}%`, label: "Average parsed resume score", icon: Brain, color: "text-indigo-500 bg-indigo-50" }
         ].map((met, idx) => (
-          <div key={idx} className="bg-white p-5 border border-slate-200/85 rounded-2xl shadow-sm flex items-center justify-between">
+          <div key={idx} className="bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-800/85 rounded-2xl shadow-sm flex items-center justify-between">
             <div className="space-y-1">
-              <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400 block font-mono">{met.title}</span>
-              <span className="text-2xl font-black text-slate-900 block font-mono">{met.value}</span>
+              <span className="text-[10px] uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400 block font-mono">{met.title}</span>
+              <span className="text-2xl font-black text-slate-900 dark:text-white block font-mono">{met.value}</span>
               <span className="text-xs text-slate-500 block">{met.label}</span>
             </div>
             <div className={`p-3 rounded-xl ${met.color}`}>
@@ -121,9 +121,9 @@ export default function CompanyAnalytics({ drives, applications }: CompanyAnalyt
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" id="charts-mesh">
         
         {/* Graph 1: Funnel Pipeline model */}
-        <div className="bg-white border rounded-2xl p-5 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-slate-900 border rounded-2xl p-5 shadow-sm space-y-4">
           <div>
-            <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider font-mono">Conversion Funnel Volume</h4>
+            <h4 className="text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider font-mono">Conversion Funnel Volume</h4>
             <h3 className="font-bold text-sm text-slate-800">Recruitment Step Conversion yield</h3>
           </div>
           <div className="h-64" style={{ minHeight: 256 }}>
@@ -144,13 +144,13 @@ export default function CompanyAnalytics({ drives, applications }: CompanyAnalyt
         </div>
 
         {/* Graph 2: Department-wise performance stats */}
-        <div className="bg-white border rounded-2xl p-5 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-slate-900 border rounded-2xl p-5 shadow-sm space-y-4">
           <div>
-            <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider font-mono">Performance by Major Stream</h4>
+            <h4 className="text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider font-mono">Performance by Major Stream</h4>
             <h3 className="font-bold text-sm text-slate-800">Applicant Averages by Specialty Branch</h3>
           </div>
           {branchData.length === 0 ? (
-            <div className="h-64 flex items-center justify-center text-xs text-slate-400">No student branch details compiled.</div>
+            <div className="h-64 flex items-center justify-center text-xs text-slate-500 dark:text-slate-400">No student branch details compiled.</div>
           ) : (
             <div className="h-64" style={{ minHeight: 256 }}>
               <ResponsiveContainer width="100%" height="100%" minWidth={10} minHeight={10}>
@@ -170,13 +170,13 @@ export default function CompanyAnalytics({ drives, applications }: CompanyAnalyt
         </div>
 
         {/* Graph 3: Skills Frequency */}
-        <div className="bg-white border rounded-2xl p-5 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-slate-900 border rounded-2xl p-5 shadow-sm space-y-4">
           <div>
-            <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider font-mono">Tech Stack Index</h4>
+            <h4 className="text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider font-mono">Tech Stack Index</h4>
             <h3 className="font-bold text-sm text-slate-800">Top Skills Registered in Applicants</h3>
           </div>
           {skillsData.length === 0 ? (
-            <div className="h-64 flex items-center justify-center text-xs text-slate-400">Apply for positions to compile skills stats.</div>
+            <div className="h-64 flex items-center justify-center text-xs text-slate-500 dark:text-slate-400">Apply for positions to compile skills stats.</div>
           ) : (
             <div className="h-64" style={{ minHeight: 256 }}>
               <ResponsiveContainer width="100%" height="100%" minWidth={10} minHeight={10}>
@@ -193,13 +193,13 @@ export default function CompanyAnalytics({ drives, applications }: CompanyAnalyt
         </div>
 
         {/* Graph 4: Role yield performance */}
-        <div className="bg-white border rounded-2xl p-5 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-slate-900 border rounded-2xl p-5 shadow-sm space-y-4">
           <div>
-            <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider font-mono">Yield by Opening</h4>
+            <h4 className="text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider font-mono">Yield by Opening</h4>
             <h3 className="font-bold text-sm text-slate-800">Applicants vs Selected Count per Role</h3>
           </div>
           {rolesData.length === 0 ? (
-            <div className="h-64 flex items-center justify-center text-xs text-slate-400">Post open positions to compile yield stats.</div>
+            <div className="h-64 flex items-center justify-center text-xs text-slate-500 dark:text-slate-400">Post open positions to compile yield stats.</div>
           ) : (
             <div className="h-64" style={{ minHeight: 256 }}>
               <ResponsiveContainer width="100%" height="100%" minWidth={10} minHeight={10}>

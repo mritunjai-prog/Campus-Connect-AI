@@ -52,15 +52,15 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
 
   // Form States
   const [jobRole, setJobRole] = useState("");
-  const [packageLPA, setPackageLPA] = useState<number>(0);
+  const [packageLPA, setPackageLPA] = useState<string>("0");
   const [jobDescription, setJobDescription] = useState("");
   const [skillsInput, setSkillsInput] = useState("");
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
-  const [minimumCgpa, setMinimumCgpa] = useState<number>(6.0);
-  const [allowedBacklogs, setAllowedBacklogs] = useState<number>(0);
+  const [minimumCgpa, setMinimumCgpa] = useState<string>("6.0");
+  const [allowedBacklogs, setAllowedBacklogs] = useState<string>("0");
   const [driveDate, setDriveDate] = useState("");
   const [applicationDeadline, setApplicationDeadline] = useState("");
-  const [type, setType] = useState<"placement" | "internship" | "hybrid">("placement");
+  const [type, setType] = useState<"placement" | "internship" | "job">("placement");
   const [location, setLocation] = useState("Remote / On-site");
   const [formStatus, setFormStatus] = useState<"active" | "completed" | "cancelled">("active");
 
@@ -73,12 +73,12 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
     setModalMode("create");
     setSelectedDriveId(null);
     setJobRole("");
-    setPackageLPA(6.0);
+    setPackageLPA("6.0");
     setJobDescription("");
     setSkillsInput("");
     setSelectedBranches(["Computer Science", "Information Technology"]);
-    setMinimumCgpa(6.0);
-    setAllowedBacklogs(0);
+    setMinimumCgpa("6.0");
+    setAllowedBacklogs("0");
     
     // Set default dates
     const today = new Date();
@@ -100,12 +100,12 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
     setModalMode("edit");
     setSelectedDriveId(drive.id);
     setJobRole(drive.jobRole);
-    setPackageLPA(drive.packageLPA);
+    setPackageLPA(drive.packageLPA.toString());
     setJobDescription(drive.jobDescription);
     setSkillsInput(drive.skillsRequired.join(", "));
     setSelectedBranches(drive.branchEligibility);
-    setMinimumCgpa(drive.minimumCgpa);
-    setAllowedBacklogs(drive.allowedBacklogs);
+    setMinimumCgpa(drive.minimumCgpa.toString());
+    setAllowedBacklogs(drive.allowedBacklogs.toString());
     setDriveDate(drive.driveDate ? drive.driveDate.split("T")[0] : "");
     setApplicationDeadline(drive.applicationDeadline ? drive.applicationDeadline.split("T")[0] : "");
     setType(drive.type || "placement");
@@ -238,9 +238,9 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
     <div className="space-y-6" id="comp-job-subtab">
       
       {/* Top action header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-205 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-205 dark:border-slate-800 shadow-sm">
         <div className="space-y-1">
-          <h2 className="text-lg font-bold text-slate-900">Career Campaign Postings</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Career Campaign Postings</h2>
           <p className="text-xs text-slate-500">Edit, close, and publish career drives for qualified candidates</p>
         </div>
         <button
@@ -253,22 +253,22 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
       </div>
 
       {/* FilterDeck row */}
-      <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-xs flex flex-col sm:flex-row gap-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl shadow-xs flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+          <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3 top-3" />
           <input 
             type="text" 
             placeholder="Search job title, skills, description..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-3 text-xs outline-none"
+            className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl py-2 pl-9 pr-3 text-xs outline-none"
           />
         </div>
         <div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="p-2 border border-slate-200 bg-white rounded-xl text-xs outline-none"
+            className="p-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl text-xs outline-none"
           >
             <option value="all">All Postings ({drives.length})</option>
             <option value="active">Active Drives ({drives.filter(d=>d.status==="active").length})</option>
@@ -279,19 +279,19 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
 
       {/* Roster of drives */}
       {filteredDrives.length === 0 ? (
-        <div className="py-16 bg-white border border-slate-200 rounded-2xl text-center text-slate-400 text-xs">
+        <div className="py-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-center text-slate-500 dark:text-slate-400 text-xs">
           No job drives published matching criteria. Launch your first posting above!
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6" id="recruiter-jobs-racks">
           {filteredDrives.map(drive => (
-            <div key={drive.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-md hover:shadow-lg transition flex flex-col justify-between space-y-4">
+            <div key={drive.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-md hover:shadow-lg transition flex flex-col justify-between space-y-4">
               
               <div className="space-y-2">
                 <div className="flex justify-between items-start gap-4">
                   <div>
                     <div className="flex items-center space-x-2">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded font-mono uppercase tracking-wider ${drive.status === "active" ? "bg-emerald-50 text-emerald-700 border border-emerald-150" : "bg-slate-100 text-slate-500 border border-slate-200"}`}>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded font-mono uppercase tracking-wider ${drive.status === "active" ? "bg-emerald-50 text-emerald-700 border border-emerald-150" : "bg-slate-100 text-slate-500 border border-slate-200 dark:border-slate-800"}`}>
                         {drive.status === "active" ? "Active App Window" : "Campaign Closed"}
                       </span>
                       {drive.approvalStatus === 'pending' && (
@@ -313,9 +313,9 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
                         </span>
                       )}
                     </div>
-                    <h3 className="text-base font-extrabold text-slate-900 mt-2 tracking-tight">{drive.jobRole}</h3>
+                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white mt-2 tracking-tight">{drive.jobRole}</h3>
                     <div className="flex items-center space-x-2 mt-1">
-                      <p className="text-xs text-slate-400 font-medium font-sans">{drive.companyName}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium font-sans">{drive.companyName}</p>
                       <span className="text-slate-300">•</span>
                       <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded capitalize">{drive.type || "placement"}</span>
                     </div>
@@ -328,7 +328,7 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed mt-2 pt-1 border-t border-slate-100">
+                <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-3 leading-relaxed mt-2 pt-1 border-t border-slate-100">
                   {drive.jobDescription}
                 </p>
 
@@ -357,7 +357,7 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
                   <span className="text-[10px] text-slate-450 block font-mono font-bold mb-1 uppercase tracking-wider">Eligible Streams</span>
                   <div className="flex flex-wrap gap-1.5">
                     {drive.branchEligibility.map((br, idx) => (
-                      <span key={idx} className="bg-slate-100 border text-slate-600 px-2 py-0.5 rounded text-[10px] font-bold">
+                      <span key={idx} className="bg-slate-100 border text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded text-[10px] font-bold">
                         {br}
                       </span>
                     ))}
@@ -382,7 +382,7 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
               <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
                 <button
                   onClick={() => handleToggleStatus(drive)}
-                  className="inline-flex items-center space-x-1 text-xs font-bold text-slate-600 hover:text-emerald-600 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200/60 cursor-pointer transition shrink-0"
+                  className="inline-flex items-center space-x-1 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-emerald-600 bg-slate-50 dark:bg-slate-900/50 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800/60 cursor-pointer transition shrink-0"
                 >
                   {drive.status === "active" ? (
                     <>
@@ -391,7 +391,7 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
                     </>
                   ) : (
                     <>
-                      <ToggleLeft className="w-4 h-4 text-slate-400" />
+                      <ToggleLeft className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                       <span>Closed (Re-open)</span>
                     </>
                   )}
@@ -400,7 +400,7 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
                 <div className="flex items-center space-x-1.5">
                   <button
                     onClick={() => handleOpenEdit(drive)}
-                    className="p-2 text-slate-600 hover:text-blue-600 bg-slate-50 border border-slate-200 hover:border-blue-200 rounded-xl transition cursor-pointer"
+                    className="p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-blue-200 rounded-xl transition cursor-pointer"
                     title="Edit Drive Position Info"
                   >
                     <Edit className="w-4 h-4" />
@@ -423,17 +423,17 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
       {/* JOB CREATION / EDITING FORM MODAL */}
       {showModal && (
         <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto" id="drive-builder-modal">
-          <div className="bg-white rounded-3xl border border-slate-205 shadow-2xl max-w-2xl w-full p-6 md:p-8 space-y-5 my-8">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-205 dark:border-slate-800 shadow-2xl max-w-2xl w-full p-6 md:p-8 space-y-5 my-8">
             <div className="flex justify-between items-start border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-lg font-black text-slate-900 tracking-tight">
+                <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
                   {modalMode === "create" ? "Publish Placement Campaign" : "Revamp Campaign Profile"}
                 </h3>
                 <p className="text-xs text-slate-500">Provide criteria standards for students of CampusConnect</p>
               </div>
               <button 
                 onClick={() => setShowModal(false)}
-                className="p-1 text-slate-400 hover:text-slate-600 bg-slate-50 border rounded-full"
+                className="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/50 border rounded-full"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -455,32 +455,32 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
             <form onSubmit={handleFormSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Job Designation Role / Title</label>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Job Designation Role / Title</label>
                   <input 
                     type="text" 
                     required
                     value={jobRole}
                     onChange={(e) => setJobRole(e.target.value)}
                     placeholder="e.g. SDE - Backend Engineer"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Salary Compensation (LPA)</label>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Salary Compensation (LPA)</label>
                   <input 
                     type="number" 
                     required
                     step="0.5"
                     value={packageLPA}
-                    onChange={(e) => setPackageLPA(Number(e.target.value))}
+                    onChange={(e) => setPackageLPA(e.target.value.replace(/^0+(?=\d)/, ''))}
                     placeholder="e.g. 12.0"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Academic CGPA Cutoff</label>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Minimum CGPA Cutoff</label>
                   <input 
                     type="number" 
                     required
@@ -488,79 +488,85 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
                     min="0"
                     max="10"
                     value={minimumCgpa}
-                    onChange={(e) => setMinimumCgpa(Number(e.target.value))}
+                    onChange={(e) => setMinimumCgpa(e.target.value.replace(/^0+(?=\d)/, ''))}
                     placeholder="e.g. 7.5"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Allowed Active Backlogs Limit</label>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Allowed Active Backlogs Limit</label>
                   <input 
                     type="number" 
                     required
                     min="0"
                     value={allowedBacklogs}
-                    onChange={(e) => setAllowedBacklogs(Number(e.target.value))}
+                    onChange={(e) => setAllowedBacklogs(e.target.value.replace(/^0+(?=\d)/, ''))}
                     placeholder="e.g. 0"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Hiring Drive Event Date</label>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Hiring Drive Event Date</label>
                   <input 
                     type="date" 
                     required
                     value={driveDate}
                     onChange={(e) => setDriveDate(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Application Registration Deadline</label>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Application Registration Deadline</label>
                   <input 
                     type="date" 
                     required
                     value={applicationDeadline}
                     onChange={(e) => setApplicationDeadline(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Drive Category / Type</label>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Drive Category / Type</label>
                   <select 
                     value={type}
                     onChange={(e) => setType(e.target.value as any)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900"
                   >
                     <option value="placement">Placement (Full-time)</option>
                     <option value="internship">Internship (Summer/Winter)</option>
-                    <option value="hybrid">Hybrid / 6-Month Internship</option>
+                    <option value="job">Job / 6-Month Internship</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Work Location</label>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Work Location</label>
                   <input 
                     type="text" 
+                    list="locations-list"
                     required
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="e.g. Bangalore / Hybrid / Remote"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white"
+                    className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900"
                   />
+                  <datalist id="locations-list">
+                    <option value="Hybrid" />
+                    <option value="On-site" />
+                    <option value="Virtual / Remote" />
+                  </datalist>
                 </div>
               </div>
 
               {/* Multi-discipline checkbox selector */}
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase font-mono tracking-wider">Eligible Discipline Branches</label>
-                <div className="grid grid-cols-2 gap-2 bg-slate-50 p-4 border border-slate-200 rounded-xl">
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1.5 uppercase font-mono tracking-wider">Eligible Discipline Branches</label>
+                <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-900/50 p-4 border border-slate-200 dark:border-slate-800 rounded-xl">
                   {BRANCH_OPTIONS.map((branch, idx) => (
-                    <label key={idx} className="flex items-center space-x-2 text-xs font-medium text-slate-600 cursor-pointer">
+                    <label key={idx} className="flex items-center space-x-2 text-xs font-medium text-slate-600 dark:text-slate-300 cursor-pointer">
                       <input 
                         type="checkbox"
                         checked={selectedBranches.includes(branch)}
@@ -574,26 +580,26 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Skills Profile Required (comma-separated list)</label>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Skills Profile Required (comma-separated list)</label>
                 <input 
                   type="text" 
                   required
                   value={skillsInput}
                   onChange={(e) => setSkillsInput(e.target.value)}
                   placeholder="e.g. React, Node.js, Express, TypeScript, SQL"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white"
+                  className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Detailed Description (Role & Outcomes)</label>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Detailed Description (Role & Outcomes)</label>
                 <textarea 
                   required
                   rows={4}
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                   placeholder="Summarize key tasks, job expectations, and candidate support structures..."
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white"
+                  className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900"
                 />
               </div>
 
@@ -601,11 +607,11 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
                 <div>
                   {modalMode === "edit" && (
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs font-bold text-slate-600">Status:</span>
+                      <span className="text-xs font-bold text-slate-600 dark:text-slate-300">Status:</span>
                       <select
                         value={formStatus}
                         onChange={(e) => setFormStatus(e.target.value as any)}
-                        className="p-1 border text-xs rounded bg-white"
+                        className="p-1 border text-xs rounded bg-white dark:bg-slate-900"
                       >
                         <option value="active">Active Open</option>
                         <option value="completed">Closed Completed</option>
@@ -619,7 +625,7 @@ export default function JobManagement({ drives, token, apiBaseUrl, onRefresh }: 
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="bg-slate-100 text-slate-600 font-bold py-2 px-4 rounded-xl text-xs"
+                    className="bg-slate-100 text-slate-600 dark:text-slate-300 font-bold py-2 px-4 rounded-xl text-xs"
                   >
                     Discard Changes
                   </button>

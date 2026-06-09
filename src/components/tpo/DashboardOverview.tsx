@@ -432,28 +432,28 @@ export default function DashboardOverview({
             <div className="space-y-3 pt-1">
               {/* Insight Stat 1 */}
               <div className="flex justify-between items-center text-xs">
-                <span className="text-slate-300">Pending Student Verifications:</span>
-                <span className="font-bold font-mono text-amber-400">{students.filter(s => s.verificationStatus === "pending").length}</span>
+                <span className="text-slate-600 dark:text-slate-300">Pending Student Verifications:</span>
+                <span className="font-bold font-mono text-amber-600 dark:text-amber-400">{students.filter(s => s.verificationStatus === "pending").length}</span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-slate-300">Unverifed Recruiter Signups:</span>
-                <span className="font-bold font-mono text-amber-400">{companies.filter(c => !c.isVerified && !c.isApproved).length}</span>
+                <span className="text-slate-600 dark:text-slate-300">Unverifed Recruiter Signups:</span>
+                <span className="font-bold font-mono text-amber-600 dark:text-amber-400">{companies.filter(c => !c.isVerified && !c.isApproved).length}</span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-slate-300">Placement Percentage:</span>
-                <span className="font-bold font-mono text-indigo-400">{placementRateVal}%</span>
+                <span className="text-slate-600 dark:text-slate-300">Placement Percentage:</span>
+                <span className="font-bold font-mono text-indigo-600 dark:text-indigo-400">{placementRateVal}%</span>
               </div>
 
               {/* Top hiring list */}
-              <div className="border-t border-slate-850 pt-3">
-                <span className="text-[9px] font-bold uppercase text-slate-450 tracking-wider block mb-2">Top Hiring Companies</span>
+              <div className="border-t border-slate-200 dark:border-slate-850 pt-3">
+                <span className="text-[9px] font-bold uppercase text-slate-500 dark:text-slate-450 tracking-wider block mb-2">Top Hiring Companies</span>
                 {topHiringCompanies.length === 0 ? (
                   <p className="text-[10px] text-slate-500 italic">No job selections recorded yet</p>
                 ) : (
                   <div className="space-y-1.5">
                     {topHiringCompanies.map((comp, idx) => (
                       <div key={idx} className="flex justify-between text-[11px]">
-                        <span className="text-slate-350">{comp.name}</span>
+                        <span className="text-slate-600 dark:text-slate-350">{comp.name}</span>
                         <span className="font-bold text-slate-900 dark:text-white">{comp.count} selects</span>
                       </div>
                     ))}
@@ -462,10 +462,10 @@ export default function DashboardOverview({
               </div>
 
               {/* Students Needing Profile Completion */}
-              <div className="border-t border-slate-850 pt-3">
+              <div className="border-t border-slate-200 dark:border-slate-850 pt-3">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-[9px] font-bold uppercase text-slate-450 tracking-wider block">Profile Completion Gaps</span>
-                  <span className="text-[8px] text-amber-400 uppercase tracking-tight">Need 100% Core Verification</span>
+                  <span className="text-[9px] font-bold uppercase text-slate-500 dark:text-slate-450 tracking-wider block">Profile Completion Gaps</span>
+                  <span className="text-[8px] text-amber-600 dark:text-amber-400 uppercase tracking-tight">Need 100% Core Verification</span>
                 </div>
 
                 {incompleteStudents.length === 0 ? (
@@ -473,19 +473,19 @@ export default function DashboardOverview({
                 ) : (
                   <div className="space-y-2">
                     {incompleteStudents.map(student => (
-                      <div key={student.id} className="bg-slate-900 border border-slate-800 p-2 rounded-lg flex items-center justify-between text-[10px]">
+                      <div key={student.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-lg flex items-center justify-between text-[10px]">
                         <div className="min-w-0 flex-1 pr-2">
                           <div className="flex items-center justify-between mb-0.5">
-                            <span className="font-medium text-slate-200 truncate block">{student.name}</span>
-                            <span className="font-mono text-slate-400 font-bold">{student.profileCompleteness || 0}%</span>
+                            <span className="font-medium text-slate-800 dark:text-slate-200 truncate block">{student.name}</span>
+                            <span className="font-mono text-slate-500 dark:text-slate-400 font-bold">{student.profileCompleteness || 0}%</span>
                           </div>
-                          <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                          <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
                             <div className="bg-amber-500 h-full" style={{ width: `${student.profileCompleteness || 10}%` }}></div>
                           </div>
                         </div>
                         <button 
                           onClick={() => sendNotificationReminder(student.id)}
-                          className="bg-slate-800 hover:bg-slate-700 text-amber-400 p-1 rounded-md shrink-0 border border-slate-750"
+                          className="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-amber-600 dark:text-amber-400 p-1 rounded-md shrink-0 border border-slate-200 dark:border-slate-750"
                           title="Send completion reminder email"
                         >
                           <Mail className="w-3 h-3" />
@@ -511,11 +511,11 @@ export default function DashboardOverview({
                     {/* Circle marker */}
                     <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 bg-indigo-600 rounded-full border-2 border-white dark:border-slate-950"></div>
                     
-                    <div className="flex justify-between font-bold text-slate-850 dark:text-slate-350">
-                      <span>{log.userName} <span className="font-normal text-slate-450">({log.userRole})</span></span>
-                      <span className="text-[9px] font-normal text-slate-400 dark:text-slate-550">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                    <div className="flex justify-between font-bold text-slate-800 dark:text-slate-350">
+                      <span>{log.userName} <span className="font-normal text-slate-500 dark:text-slate-450">({log.userRole})</span></span>
+                      <span className="text-[9px] font-normal text-slate-500 dark:text-slate-550">{new Date(log.timestamp).toLocaleTimeString()}</span>
                     </div>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-450 mt-0.5">{log.action}</p>
+                    <p className="text-[10px] text-slate-600 dark:text-slate-450 mt-0.5">{log.action}</p>
                   </div>
                 ))
               )}

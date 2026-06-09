@@ -75,9 +75,9 @@ export default function InterviewScheduler({
     <div className="space-y-6" id="comp-interviews-subtab">
       
       {/* Upper header action status deck */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
             Your Placement Interviews Calendar
             <button onClick={() => setIsOptimizerOpen(true)} className="ml-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full text-xs font-bold transition flex items-center shadow-sm border border-indigo-200">
               <Zap className="w-3.5 h-3.5 mr-1" /> AI Optimizer
@@ -90,7 +90,7 @@ export default function InterviewScheduler({
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as any)}
-            className="p-2 border border-slate-200 bg-slate-50 rounded-xl text-xs font-bold outline-none cursor-pointer"
+            className="p-2 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs font-bold outline-none cursor-pointer"
           >
             <option value="all">All Schedules ({interviews.length})</option>
             <option value="scheduled">Scheduled ({interviews.filter(i=>i.status==="scheduled").length})</option>
@@ -102,7 +102,7 @@ export default function InterviewScheduler({
 
       {/* Grid listing */}
       {filteredInts.length === 0 ? (
-        <div className="py-16 bg-white border border-slate-200 rounded-2xl text-center text-slate-400 text-xs">
+        <div className="py-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-center text-slate-500 dark:text-slate-400 text-xs">
           No booked interview timelines found matching selection.
         </div>
       ) : (
@@ -115,15 +115,15 @@ export default function InterviewScheduler({
             return (
               <div 
                 key={int.id} 
-                className="bg-white border border-slate-200 rounded-2xl p-5 shadow-md hover:shadow-lg transition flex flex-col justify-between space-y-4"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-md hover:shadow-lg transition flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-3">
                   
                   {/* Slot top deck */}
                   <div className="flex justify-between items-start gap-3 border-b border-slate-100 pb-3">
                     <div className="space-y-0.5">
-                      <span className="text-[9px] text-slate-400 font-mono block">MEETING ID: {int.id}</span>
-                      <h4 className="text-sm font-black text-slate-900 mt-1">{int.studentName}</h4>
+                      <span className="text-[9px] text-slate-500 dark:text-slate-400 font-mono block">MEETING ID: {int.id}</span>
+                      <h4 className="text-sm font-black text-slate-900 dark:text-white mt-1">{int.studentName}</h4>
                       <p className="text-[10px] text-emerald-600 font-mono uppercase font-bold tracking-wider">{int.jobRole} Interview</p>
                     </div>
                     
@@ -133,16 +133,16 @@ export default function InterviewScheduler({
                   </div>
 
                   {/* Datetime detail card */}
-                  <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl space-y-2 text-xs text-slate-650">
+                  <div className="p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 rounded-xl space-y-2 text-xs text-slate-650">
                     <div className="flex items-center space-x-2">
-                      <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <Calendar className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
                       <span><b>Date:</b> {int.interviewDate}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <Clock className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
                       <span><b>Time:</b> {int.interviewTime}</span>
                     </div>
-                    <div className="flex items-center space-x-2 pt-1 border-t border-slate-200/50">
+                    <div className="flex items-center space-x-2 pt-1 border-t border-slate-200 dark:border-slate-800/50">
                       <Video className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                       <div className="truncate flex-1">
                         <b>Venue/Link:</b>{" "}
@@ -157,7 +157,7 @@ export default function InterviewScheduler({
                             <ExternalLink className="w-3 h-3 text-emerald-500 shrink-0" />
                           </a>
                         ) : (
-                          <span className="font-semibold text-slate-700">{int.linkOrVenue}</span>
+                          <span className="font-semibold text-slate-700 dark:text-slate-200">{int.linkOrVenue}</span>
                         )}
                       </div>
                     </div>
@@ -181,14 +181,14 @@ export default function InterviewScheduler({
                         placeholder="Add candidate evaluation score/feedback..."
                         value={hrNotesMap[int.id] || ""}
                         onChange={(e) => handleNotesChange(int.id, e.target.value)}
-                        className="bg-slate-50 border border-slate-200 rounded p-2 text-xs w-full outline-none focus:bg-white"
+                        className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded p-2 text-xs w-full outline-none focus:bg-white dark:focus:bg-slate-800 dark:bg-slate-900"
                       />
                     </div>
                     <div className="flex space-x-1 justify-end pt-1">
                       <button
                         onClick={() => handleUpdateInterview(int.id, "cancelled")}
                         disabled={loadingId === int.id}
-                        className="bg-slate-50 border text-slate-650 hover:bg-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"
+                        className="bg-slate-50 dark:bg-slate-900/50 border text-slate-650 hover:bg-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"
                       >
                         Cancel Slot
                       </button>
@@ -212,8 +212,8 @@ export default function InterviewScheduler({
       {/* AI Optimizer Modal */}
       {isOptimizerOpen && (
         <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 shadow-2xl max-w-lg w-full">
-            <h3 className="text-lg font-black flex items-center gap-2 mb-2 text-slate-900">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-2xl max-w-lg w-full">
+            <h3 className="text-lg font-black flex items-center gap-2 mb-2 text-slate-900 dark:text-white">
               <Sparkles className="w-5 h-5 text-indigo-500" />
               Smart Slot Optimization
             </h3>
@@ -231,24 +231,24 @@ export default function InterviewScheduler({
                 </div>
                 <div className="max-h-60 overflow-y-auto space-y-2 pr-2">
                   {optimizedSchedule.itinerary?.map((slot: any, idx: number) => (
-                    <div key={idx} className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs flex justify-between items-center">
+                    <div key={idx} className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-200 dark:border-slate-800 text-xs flex justify-between items-center">
                       <span className="font-bold text-slate-800">{slot.studentName}</span>
-                      <span className="bg-white border px-2 py-1 rounded text-slate-500">{slot.startTime} - {slot.endTime}</span>
+                      <span className="bg-white dark:bg-slate-900 border px-2 py-1 rounded text-slate-500">{slot.startTime} - {slot.endTime}</span>
                     </div>
                   ))}
                 </div>
                 <div className="flex justify-end gap-2 pt-4 border-t mt-4">
-                  <button onClick={() => { setIsOptimizerOpen(false); setOptimizedSchedule(null); }} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">Discard</button>
+                  <button onClick={() => { setIsOptimizerOpen(false); setOptimizedSchedule(null); }} className="px-4 py-2 bg-slate-100 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold">Discard</button>
                   <button onClick={() => { setIsOptimizerOpen(false); setOptimizedSchedule(null); alert("Feature: Batch save schedule not fully wired up yet."); }} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold">Apply Schedule</button>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100 space-y-4 text-sm text-slate-600">
+                <div className="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100 space-y-4 text-sm text-slate-600 dark:text-slate-300">
                   <p>Would you like Gemini AI to auto-schedule pending interviews?</p>
                 </div>
                 <div className="flex justify-end gap-2 pt-4 border-t">
-                  <button onClick={() => setIsOptimizerOpen(false)} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">Cancel</button>
+                  <button onClick={() => setIsOptimizerOpen(false)} className="px-4 py-2 bg-slate-100 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold">Cancel</button>
                   <button onClick={async () => {
                     setOptimizing(true);
                     try {
